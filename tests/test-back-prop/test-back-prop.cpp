@@ -3,6 +3,11 @@
 #include <map>
 #include <string>
 
+// Own includes --------------------
+#include "utils/numeric-traits.hpp"
+#include "utils/utility-functions.hpp"
+#include "nnet/nnet.hpp"
+
 int main(int argc, char *argv[]) {
 	std::cout << "Project1: Hello World!" << std::endl;
 
