@@ -54,6 +54,11 @@ namespace NNet { // begin NNet
 			return mActVec;
 		}
 
+		template< typename ActivationFun >
+		VectorXType ComputeActivation( std::vector< NumericType > const& inputVec, ActivationFun&& actFun ) {
+			return ComputeActivation( VectorXType( inputVec.data( ) ), actFun );
+		}
+
 		auto begin( ) { return mNeurons.end( ); }
 		auto const begin( ) const { return mNeurons.begin( ); }
 		auto end( ) { return mNeurons.end( ); }
@@ -89,14 +94,15 @@ namespace NNet { // begin NNet
 		NNet( NNet const& c ) = delete;
 		~NNet( ) = default;
 
-		void ComputeNetworkWeights( ) {
+		enum class ClassifierType : unsigned char { MSE, SOFTMAX, INVALID };
+		void ComputeNetworkWeights( std::vector< NumericType > const& inputVec, ClassifierType classifier ) {
 			auto IdentityFun = []( auto const& x ) {
 								   return x;
 							   };
 			if ( mLayers.empty( ) ) { return; }
 			else if ( GetNumLayers( ) == 1 ) {
 				auto& outputLayer = mLayers.front( );
-				ouputLayer.ComputeActivation( GetInputVec( ), IdentityFun );
+				ouputLayer.ComputeActivation( inputVec, IdentityFun );
 			}
 			else {
 				auto LogisticFun = []( auto const& x ) {
@@ -107,7 +113,7 @@ namespace NNet { // begin NNet
 					auto& layer = GetLayer( i );
 					if ( i == 0 ) {
 						// first hidden layer
-						layer.ComputeActivation( GetInputVec( ), LogisticFun );
+						layer.ComputeActivation( inputVec, LogisticFun );
 					}
 					else if ( i < GetNumLayers( ) - 1 ) {
 						// second, third, fourth... hidden layers
@@ -121,30 +127,83 @@ namespace NNet { // begin NNet
 					}
 				}
 			}
+			switch ( classifier ) {
+			case ClassifierType::MSE: {
+			}
+				break;
+			case ClassifierType::SOFTMAX: {
+				// classify with softmax
+				auto& outputVec = GetOutputLayer( ).GetActVec( );
+				NumericType sum = 0;
+				std::transform( outputVec.begin( ), outputVec.end( ), outputVec.begin( ),
+								[&sum]( auto const& ele ) {
+									auto output = ele;
+									if ( ele < 300.0 )
+										output = std::exp( output );
+									else
+										output = std::exp( 300.0 );
+									sum += output;
+									return output;
+								} );
+				std::transform( outputVec.begin( ), outputVec.end( ), outputVec.begin( ),
+								[&sum]( auto const& ele ) {
+									return ele/sum;
+								} );
+			}
+				break;
+			default:
+			}
+		}
 
-			// classify with softmax
-			auto& outputVec = GetOutputLayer( ).GetActVec( );
-			NumericType sum = 0;
-			std::transform( outputVec.begin( ), outputVec.end( ), outputVec.begin( ),
-							[&sum]( auto const& ele ) {
-								auto output = ele;
-								if ( ele < 300.0 )
-									output = std::exp( output );
-								else
-									output = std::exp( 300.0 );
-								sum += output;
-								return output;
-							} );
-			std::transform( outputVec.begin( ), outputVec.end( ), outputVec.begin( ),
-							[&sum]( auto const& ele ) {
-								return ele/sum;
-							} );
+		template< typename IterType >
+		void BatchGradient( IterType inputsBegin, IterType inputsEnd,
+							IterType targetsBegin, IterType targetsEnd,
+							ClassifierType classifier ) {
+			auto numInputs = std::distance( inputsBegin, inputsEnd );
+			auto numTargets = std::distance( targetsBegin, targetsEnd );
+			assert( numInputs == numTargets );
+
+			MatrixXType deltas( numInputs, numTargets );
+			NumericType error = 0.0;
+
+			auto targetIter = targetsBegin;
+			for ( auto const& inputIter = inputsBegin; inputIter != inputsEnd; ++inputIter, ++targetIter ) {
+				VectorXType inputVec( inputIter -> data( ) );
+				VectorXType targetVec( targetIter -> data( ) );
+				ComputeNetworkWeights( inputVec );
+
+				auto const& outputVec = GetOutputLayer( ).GetActVec( );
+				auto idx = std::distance( inputsBegin, inputIter );
+				switch ( classifier ) {
+				case ClassifierType::SOFTMAX: {
+					// find true class that has max target output
+					auto maxEle = outputVec.maxCoeff( );
+					deltas.row( idx ) = targetVec - outputVec; // negative derivative of cross entropy wrt input
+					error -= std::log( maxEle + 1.0e-30 ); // negative log likelihood
+				}
+					break;
+				default: {
+					auto diffVec = outputVec - targetVec;
+					deltas.row( idx ) = -2.0 * diffVec; // negative derivative of squared error wrt input to neuron
+					error += diffVec.dot( diffVec );
+				}
+				}
+
+				// inputs sent to outputs with no hidden layers
+				MatrixXType gradMat;
+				if ( GetNumLayers( ) == 1 ) {
+					auto const& prevAct = inputVec;
+					gradMat = deltas.row( idx ) * prevAct.transpose( );
+				}
+				else {
+					auto const& prevAct = GetLayer( GetNumLayers( ) - 2 ).GetActVec( );
+					gradMat = deltas.row( idx ) * prevAct.transpose( );
+				}
+			}
 		}
 
 		// get and set methods
 		std::size_t GetNumLayers( ) const { return mLayers.size( ); }
-		auto& GetInputVec( ) { return mInputVec; }
-		auto const& GetInputVec( ) const { return mInputVec; }
 		auto& GetLayers( ) { return mLayers; }
 		auto const& GetLayers( ) const { return mLayers; }
 		auto& GetLayer( std::size_t i ) { return mLayers[i]; };
@@ -157,7 +216,6 @@ namespace NNet { // begin NNet
 
 	private: 	//private data members
 		std::vector< NNLayerType > mLayers;
-		std::vector< NumericType > mInputVec;
 	}; // end of class NNet
 
 
