@@ -1,0 +1,258 @@
+\documentclass[12pt,notitlepage]{article}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+% \usepackage{kbordermatrix}
+% theorem preambles
+\newtheorem{mydef}{Definition}
+\usepackage{graphicx}			% allows us to import images
+\usepackage{listings}
+\lstset{
+  breaklines=true
+}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{cmds}
+\hypersetup{colorlinks=true}
+\usepackage[text={7in,10in}]{geometry}
+% \setlength{\parindent}{0in}
+
+% matrix columns
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+\setcounter{MaxMatrixCols}{20}
+
+\begin{document}
+\title{Neural Network Notes}
+\author{Kevin J. Marshall}
+\maketitle
+
+\section{Feedforward Neural Network Matrix Representation}
+\label{sec:nnet-matrix-comp}
+The basic computational units of a neural network (NN) are called neurons
+and are grouped together in finite sets called layers.  The structure of a
+general NN consists of an input layer followed by a finite
+set of hidden computational layers and a final output layer.  In
+feedforward NNs, information flows in a single direction from the
+inputs to the outputs and the computation graph is always a directed acyclic
+graph (DAG).  Since the computational graph is a DAG, the neural
+network may always be arranged such that each layer of the feedforward
+NN only depends on  the layer to its left (the input side).  This can
+be accomplished by performing a topological sort on the neurons
+(nodes) of the DAG and
+grouping them into layers $l_{k}$ with depth $k$ where $l_{k}$ is the
+set of all neurons in layer $k$.  Upon arranging the $K$ layers from
+$l_{0},l_{1},\dots,l_{K}$ each layer's neuron set $l_{k}$ will only depend
+on nodes from the set of layers $\{l_{j<k}\}$.
+
+As inputs, a set of $N$ vector valued input-output pairs $\{(\vx_{0},\vy_{0}), \dots,
+(\vx_{N},\vy_{N})\}$ is fed into the network.  For each layer, $k$, the
+following computation is carried out,
+\begin{align}
+  \label{eq:activation-component}
+  a_{j}^{k} &= w_{ij}^{k}o_{i}^{k-1}\\
+  \label{eq:output-component}
+  o_{j}^{k} &= f( a_{j}^{k})  
+\end{align}
+where we have used Einstein summation notation in
+Eqns.~\ref{eq:activation-component} and \ref{eq:output-component} and
+where the vector expressions are
+\begin{align}
+  \label{eq:activation-matrix}
+  \vect{a}^{k} &= (\vect{W}^{k})^{T}\vect{o}^{k-1}\\
+  \label{eq:output-matrix}
+  \vect{o}^{k} &= f(\vect{a}^{k})
+\end{align}
+In these equations
+\begin{itemize}
+\item $a_{j}^{k}$ is the activation of neuron $j$ in layer $k$ and has
+  dimensions $|l_{k}+1|$ including a bias term
+\item $o_{j}^{k}$ is the output of neuron $j$ in layer $k$ after
+  passing through the nonlinear function $f(\cdot)$
+\item $\vect{W}^{k}$ is the weight matrix of layer $k$ such that
+  elements $W_{ij}^{k}$ describe the weight associated with the $i$'th
+  neuron input in layer $k-1$ to the $j$'th neuron in layer $k$.
+  The dimensions of the weight matrix are $( n_{k-1} + 1 ) \times
+  n_{k}$ where $n_{k-1} = |l_{k-1}|$ and $n_{k}
+  = |l_{k}|$ are the number of neurons in layers $k-1$ and $k$ and
+  $+1$ accounts for weights associated with the bias neuron.
+\item $f(\cdot;j,k)$ is a nonlinear function $f: \mathbb{R}^{n_{k}} \to
+  \mathbb{R}$ which may be different for each layer and each neuron.  Historically
+  this function is taken to be the same for all neurons in all hidden
+  layers,
+  $f( \cdot; j,k ) = f( \cdot )$, and often takes the form of the
+  logistic function:
+  \begin{equation}
+    \label{eq:logistic-fun}
+    f(x) = \frac{A}{1+\exp(-r(x-x_{0}))}
+  \end{equation}
+  where $A$ is the curve's maximum value, $x_{0}$ is the x-value of
+  the functions midpoint, and $r$ is the logistic growth rate
+  (steepness of the curve).  Standard practice uses $A=1, r=1, x_{0} =
+  0$ which centers the function at $x=0$ and scales the input between
+  to $(0,1)$
+\end{itemize}
+Once the information flow reaches the output layer $l_{K}$, an error
+may be computed for each input based on the nodal output values
+$\hat{y}_{n}$ and the target values $y_{n}$.  Gradient decent
+techniques attempt to minimize the error by adjusting the weights.
+Weight update rules involve computing
+\begin{equation}
+  \label{eq:error-grad}
+  \begin{split}
+    \pderiv{E}{w^{k}_{ij}} &=
+    \pderiv{E}{a_{l}^{k}}\pderiv{a_{l}^{k}}{w_{ij}^{k}}\\
+    &= \pderiv{E}{a_{l}^{k}} \pderiv{}{w_{ij}^{k}}\left( w_{ml}^{k}o^{k-1}_{m} \right)\\
+    &= \pderiv{E}{a_{l}^{k}}\delta_{mi}\delta_{jl}o_{m}^{k-1}\\
+    &= \delta_{j}^{k}o_{i}^{k-1}
+  \end{split}
+\end{equation}
+
+\subsection{Bias}
+\label{sec:bias}
+A bias term has been hidden in Eqn.~\ref{eq:activation-matrix} such
+that $\vect{W}^{T}$ is given by
+\begin{equation}
+  \label{eq:wmat-explicit}
+  (\vect{W}^{k})^{T}\vect{o}^{k-1} =
+  \begin{bmatrix}
+    w_{00} & w_{10} & \dots & w_{n_{k-1}0} & w_{b_{k-1}0} \\
+    \vdots & \vdots & \vdots & \vdots & \vdots \\
+    w_{0n_{k}} & w_{1n_{k}} & \dots & w_{n_{k-1}n_{k}} & w_{b_{k-1}n_{k}}
+  \end{bmatrix}
+  \begin{bmatrix}
+    o_{0}^{k-1}\\
+    \vdots\\
+    o_{n_{k-1}}^{k-1}\\
+    1
+  \end{bmatrix}
+\end{equation}
+for $|l_{k}|=n_{k}$ and $|l_{k-1}|=n_{k-1}$ neurons in layers $k$ and $k-1$ and a bias
+weight vector of $[w_{b_{k-1}0},\dots,w_{b_{k-1}n_{k}}]^{T}$.  In
+general, layers contain a decreasing number of nodes as the depth
+increases, i.e. $n_{k} \le n_{k-1}$.
+
+\subsection{Output Layer}
+\label{sec:output-layer}
+In the above formalism the output layer is indexed as layer $l_{K}$
+and the first hidden layer is indexed as $l_{0}$.  We treat the input
+separately.  In general some function $f(\cdot;j,K)$ could be applied to
+the $j$'th neruon of the output layer $K$, though it standard practice to use the identity function
+$f(x;j,K) = x, \forall j$.
+
+In a neural network, the set of weights function as adjustable
+parameters which allow one to predict an output (target) given an
+input.  These weights correspond to weight elements of per-layer
+weight matrices.  
+
+\subsubsection{Mean Squared Error}
+\label{sec:error-mse}
+The mean squared error is a good classifier for the numeric output in
+which case weight updates are computed by minimizing the error
+\begin{equation}
+  \label{eq:error}
+  \begin{split}
+    E &= \frac{1}{2N}\sum_{n}(\hat{\vy}^{n} - \vy^{n} )^{2}\\
+    &= \frac{1}{2N}\sum_{n}(f(\vect{a}^{K};K)^{n} - \vy^{n} )^{2}\\
+    &= \frac{1}{N}\sum_{n}E_{n}\\
+  \end{split}
+\end{equation}
+where $\hat{\vy}^{n}$ and $\vy^{n}$ are respectively the
+output (prediction) vector and target vector of the $n$'th input
+$(\vx^{n},\vy^{n})$.  For the output layer we find that
+Eqn.~\ref{eq:error-grad} becomes
+\begin{equation}
+  \label{eq:error-grad-output}
+  \begin{split}
+    \pderiv{E_{n}}{w^{K}_{ij}} &=
+    \pderiv{E_{n}}{\hat{y}_{l}^{K}}\pderiv{\hat{y}_{l}^{K}}{a_{m}^{K}}\pderiv{\hat{a_{m}^{K}}}{w_{ij}^{K}}\\
+    &= (\hat{y}_{l}^{K} - y^{p}_{l} )f'(a_{l}^{K})\delta_{ml}\delta_{in}\delta_{jm}o_{n}^{K-1}\\
+    &= (\hat{y}_{j}^{K} - y^{p}_{j} )f'(a_{j}^{K})o_{i}^{K-1}
+  \end{split}
+\end{equation}
+We note that equation \ref{eq:error-grad-output} actually describes
+three layer operations which take place sequentially.  These
+operations may be described from right to left in accordance with back
+propagation as
+\begin{enumerate}
+\item Error propagation over the loss function layer,
+  \begin{equation}
+    \label{eq:error-loss-fcn}
+    \pderiv{E^{p}}{\hat{y}_{l}^{p}} &= (\hat{y}_{l}^{K} - y^{p}_{l})
+  \end{equation}
+\item Error propagation over the activation layer
+  \begin{equation}
+    \label{eq:error-act-fun}
+    \pderiv{E^{p}}{a_{m}^{K}} &=
+    \pderiv{E^{p}}{\hat{y}_{l}^{p}}f'(a_{l}^{K})\delta_{ml} = \pderiv{E^{p}}{\hat{y}_{m}^{p}}f'(a_{m}^{K})
+  \end{equation}
+\item Error propagation over the last layer $K$ to find gradient updates
+  \begin{equation}
+    \label{eq:error-last-layer}
+    \pderiv{E^{p}}{w_{ij}^{K}} &=
+    \pderiv{E^{p}}{a_{m}^{K}}\delta_{in}\delta_{jm}o_{n}^{K-1} = \pderiv{E^{p}}{a_{j}^{K}}o_{i}^{K-1}
+  \end{equation}
+\end{enumerate}
+The key here is to notice that back propagation inputs are error
+gradients on the forward pass inputs.  Gradient update rules for
+weight matrices are obtained 
+\section{Hidden Layers}
+\label{sec:hidden-layers}
+
+For hidden layers $l_{k}$, $0 \le k < K$, the calculation becomes,
+\begin{equation}
+  \label{eq:error-grad-hidden}
+  \begin{split}
+    \pderiv{E_{n}}{w^{k}_{ij}} &=
+    \pderiv{E_{n}}{a_{l}^{k}}\pderiv{a_{l}^{k}}{w_{ij}^{k}}\\
+    &=
+    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{a_{l}^{k}}\pderiv{a_{l}^{k}}{w_{ij}^{k}}\\
+    &=
+    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{a_{l}^{k}}\delta_{jl}o_{i}^{k-1}\\
+    &=
+    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{a_{j}^{k}}o_{i}^{k-1}\\
+    &=
+    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{o_{p}^{k}}\pderiv{o_{p}^{k}}{a_{j}^{k}}o_{i}^{k-1}\\ 
+    &=
+    \pderiv{E_{n}}{a_{m}^{k+1}}w_{pm}^{k+1}f'(a_{p}^{k})\delta_{pj}o_{i}^{k-1}\\ 
+    &= \delta^{k+1}_{m}w_{jm}^{k+1}f'(a_{j}^{k})o_{i}^{k-1}\\
+  \end{split}
+\end{equation}
+
+\section{Layer Based Architecture}
+\label{sec:layer-arch}
+The neural network architecture described above has grouped activation
+functions in with network processing layers.  Insight into the back
+propagation algorithm may be obtained by separating these layer
+computations.
+
+The output layer takes $y$
+
+\section{Things to do...}
+\label{sec:things-to-do}
+\begin{itemize}
+\item Need some way to get data in.  If using MINST we need to
+  research how to import $28 \times 28 = 756$ pixels.
+\item Design API to connect layers.  If we assume layers are fully
+  connected we have to initialize layers from left to right or right
+  to left.  For example, $756$ inputs may funnel into hidden layer
+  $l_0$ which could have $100$ neurons.  The weight matrix would then
+  be $756 \times 100$ which is the same as $\#inputs \times n_{0}$.
+  The second hidden layer could then have $50$ neurons leading to a
+  weight matrix $\vect{W}^{1}$ of dimensions $(n_{0}+1) \times n_{1}$.
+  Each weight matrix $\vect{W}^{k}$ would have dimensions $(n_{k-1}+1)
+  \times n_{k}$ with activation vector, $\vect{a}^{k}$ of dimension
+  $n_{k}$.
+\item Need to understand learning algorithm.  Run feed forward on a
+  batch set of training examples then back propagate error.
+
+\item Test on MINST, then get threading/CUDA working...
+\end{itemize}
+
+
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

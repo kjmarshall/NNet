@@ -9,7 +9,7 @@ namespace NNet { // begin NNet
 	template< typename DataType >
 	struct NumericTraits {
 		using NumericType = DataType;
-		using MatrixXType = Eigen::Matrix< DataType,	Eigen::Dynamic, Eigen::Dynamic >;
+		using MatrixXType = Eigen::Matrix< DataType, Eigen::Dynamic, Eigen::Dynamic >;
 		using VectorXType = Eigen::Matrix< DataType, Eigen::Dynamic, 1 >;
 		using RowVectorXType = Eigen::Matrix< DataType, 1, Eigen::Dynamic >;
 

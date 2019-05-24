@@ -2,7 +2,7 @@
 ## Project Name ##
 ## ------------ ##
 project(CMAKE-PROJECT-SKELETON)
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 message(STATUS "PROCESSING ${PROJECT_NAME}")
 
