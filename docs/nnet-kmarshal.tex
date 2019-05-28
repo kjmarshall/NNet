@@ -25,14 +25,15 @@
 \author{Kevin J. Marshall}
 \maketitle
 
-\section{Feedforward Neural Network Matrix Representation}
-\label{sec:nnet-matrix-comp}
+\section{Feedforward Neural Network}
+\label{sec:ff-=nn}
 The basic computational units of a neural network (NN) are called neurons
 and are grouped together in finite sets called layers.  The structure of a
-general NN consists of an input layer followed by a finite
+general neural network consists of an input layer followed by a finite
 set of hidden computational layers and a final output layer.  In
 feedforward NNs, information flows in a single direction from the
-inputs to the outputs and the computation graph is always a directed acyclic
+inputs to the outputs and the computation graph may always be
+interpreted as a directed acyclic
 graph (DAG).  Since the computational graph is a DAG, the neural
 network may always be arranged such that each layer of the feedforward
 NN only depends on  the layer to its left (the input side).  This can
@@ -41,31 +42,34 @@ be accomplished by performing a topological sort on the neurons
 grouping them into layers $l_{k}$ with depth $k$ where $l_{k}$ is the
 set of all neurons in layer $k$.  Upon arranging the $K$ layers from
 $l_{0},l_{1},\dots,l_{K}$ each layer's neuron set $l_{k}$ will only depend
-on nodes from the set of layers $\{l_{j<k}\}$.
+on neurons from the set of layers $\{l_{j<k}\}$.
 
-As inputs, a set of $N$ vector valued input-output pairs $\{(\vx_{0},\vy_{0}), \dots,
+\subsection{Matrix Representation}
+\label{sec:matrix-rep}
+
+During training a set of $N$ vector valued input-output pairs $\{(\vx_{0},\vy_{0}), \dots,
 (\vx_{N},\vy_{N})\}$ is fed into the network.  For each layer, $k$, the
 following computation is carried out,
 \begin{align}
   \label{eq:activation-component}
-  a_{j}^{k} &= w_{ij}^{k}o_{i}^{k-1}\\
+  o_{j}^{k} &= w_{ij}^{k}a_{i}^{k-1}\\
   \label{eq:output-component}
-  o_{j}^{k} &= f( a_{j}^{k})  
+  a_{j}^{k} &= f( o_{j}^{k})  
 \end{align}
 where we have used Einstein summation notation in
 Eqns.~\ref{eq:activation-component} and \ref{eq:output-component} and
-where the vector expressions are
+where the associated vector expressions are
 \begin{align}
   \label{eq:activation-matrix}
-  \vect{a}^{k} &= (\vect{W}^{k})^{T}\vect{o}^{k-1}\\
+  \vect{o}^{k} &= (\vect{W}^{k})^{T}\vect{a}^{k-1}\\
   \label{eq:output-matrix}
-  \vect{o}^{k} &= f(\vect{a}^{k})
+  \vect{a}^{k} &= f(\vect{o}^{k})
 \end{align}
 In these equations
 \begin{itemize}
-\item $a_{j}^{k}$ is the activation of neuron $j$ in layer $k$ and has
-  dimensions $|l_{k}+1|$ including a bias term
-\item $o_{j}^{k}$ is the output of neuron $j$ in layer $k$ after
+\item $o_{j}^{k}$ is the output computation of neuron $j$ in layer $k$
+  and $\vect{o}^{k}$ has dimensions $|n_{k}+1|$ including a bias term
+\item $a_{j}^{k}$ is the nonlinear output or activation of neuron $j$ in layer $k$ after
   passing through the nonlinear function $f(\cdot)$
 \item $\vect{W}^{k}$ is the weight matrix of layer $k$ such that
   elements $W_{ij}^{k}$ describe the weight associated with the $i$'th
@@ -74,8 +78,8 @@ In these equations
   n_{k}$ where $n_{k-1} = |l_{k-1}|$ and $n_{k}
   = |l_{k}|$ are the number of neurons in layers $k-1$ and $k$ and
   $+1$ accounts for weights associated with the bias neuron.
-\item $f(\cdot;j,k)$ is a nonlinear function $f: \mathbb{R}^{n_{k}} \to
-  \mathbb{R}$ which may be different for each layer and each neuron.  Historically
+\item $f(\cdot;j,k)$ is a nonlinear activation function $f: \mathbb{R}^{n_{k}} \to
+  \mathbb{R}^{n_{k}}$ which may be different for each layer and each neuron.  Historically
   this function is taken to be the same for all neurons in all hidden
   layers,
   $f( \cdot; j,k ) = f( \cdot )$, and often takes the form of the
@@ -99,9 +103,9 @@ Weight update rules involve computing
   \label{eq:error-grad}
   \begin{split}
     \pderiv{E}{w^{k}_{ij}} &=
-    \pderiv{E}{a_{l}^{k}}\pderiv{a_{l}^{k}}{w_{ij}^{k}}\\
-    &= \pderiv{E}{a_{l}^{k}} \pderiv{}{w_{ij}^{k}}\left( w_{ml}^{k}o^{k-1}_{m} \right)\\
-    &= \pderiv{E}{a_{l}^{k}}\delta_{mi}\delta_{jl}o_{m}^{k-1}\\
+    \pderiv{E}{o_{l}^{k}}\pderiv{o_{l}^{k}}{w_{ij}^{k}}\\
+    &= \pderiv{E}{o_{l}^{k}} \pderiv{}{w_{ij}^{k}}\left( w_{ml}^{k}o^{k-1}_{m} \right)\\
+    &= \pderiv{E}{o_{l}^{k}}\delta_{mi}\delta_{jl}o_{m}^{k-1}\\
     &= \delta_{j}^{k}o_{i}^{k-1}
   \end{split}
 \end{equation}
@@ -112,16 +116,16 @@ A bias term has been hidden in Eqn.~\ref{eq:activation-matrix} such
 that $\vect{W}^{T}$ is given by
 \begin{equation}
   \label{eq:wmat-explicit}
-  (\vect{W}^{k})^{T}\vect{o}^{k-1} =
+  (\vect{W}^{k})^{T}\vect{a}^{k-1} =
   \begin{bmatrix}
     w_{00} & w_{10} & \dots & w_{n_{k-1}0} & w_{b_{k-1}0} \\
     \vdots & \vdots & \vdots & \vdots & \vdots \\
     w_{0n_{k}} & w_{1n_{k}} & \dots & w_{n_{k-1}n_{k}} & w_{b_{k-1}n_{k}}
   \end{bmatrix}
   \begin{bmatrix}
-    o_{0}^{k-1}\\
+    a_{0}^{k-1}\\
     \vdots\\
-    o_{n_{k-1}}^{k-1}\\
+    a_{n_{k-1}}^{k-1}\\
     1
   \end{bmatrix}
 \end{equation}
@@ -130,18 +134,102 @@ weight vector of $[w_{b_{k-1}0},\dots,w_{b_{k-1}n_{k}}]^{T}$.  In
 general, layers contain a decreasing number of nodes as the depth
 increases, i.e. $n_{k} \le n_{k-1}$.
 
-\subsection{Output Layer}
-\label{sec:output-layer}
-In the above formalism the output layer is indexed as layer $l_{K}$
-and the first hidden layer is indexed as $l_{0}$.  We treat the input
-separately.  In general some function $f(\cdot;j,K)$ could be applied to
-the $j$'th neruon of the output layer $K$, though it standard practice to use the identity function
-$f(x;j,K) = x, \forall j$.
+\subsection{Activation Functions}
+\label{sec:activation-fun}
+Activation functions act on neuron layer outputs and may be interpreted as
+individual layers themselves.  These functions introduce
+non-linearities into the prediction model.  Several common activation
+functions and their derivatives are given below.  In what follows we
+assume $\vect{o}^{k}$ to be the input to the activation layer and
+$\vect{a}^{k}$ to be the associated output.
 
-In a neural network, the set of weights function as adjustable
-parameters which allow one to predict an output (target) given an
-input.  These weights correspond to weight elements of per-layer
-weight matrices.  
+\begin{itemize}
+\item Identity:
+  \begin{align}
+    \label{eq:identity}
+    a_{i}^{k} &= f(o_{i}^{k}) = o_{i}^{k}\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= 1
+  \end{align}
+\item Logistic:
+  \begin{align}
+    \label{eq:logistic-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) = \frac{1}{1+\exp(-o_{i}^{k})}\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &=
+                                    \frac{\exp(-o_{i}^{k})}{(1+\exp(-o_{i}^{k}))^{2}}
+                                    = f(o_{i}^{k})(1-f(o_{i}^{k}))
+  \end{align}
+\item TanH:
+  \begin{align}
+    \label{eq:tanh-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) = \tanh(o_{i}^{k})\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= \sech^{2}(o_{i}^{k}) = 1 - f^{2}(o_{i}^{k})
+  \end{align}
+\item arcTan:
+  \begin{align}
+    \label{eq:arctan-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) = \arctan(o_{i}^{k})\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= \frac{1}{(o_{i}^{k})^{2}+1}
+  \end{align}
+\item ReLU (rectified linear unit)
+  \begin{align}
+    \label{eq:relu-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) =
+                \begin{cases}
+                  o_{i}^{k}, \qquad & o_{i}^{k} \ge 0\\
+                  0, \qquad & o_{i}^{k} < 0
+                \end{cases}\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &=
+                                    \begin{cases}
+                                      1, \qquad & f(o_{i}^{k}) \ge 0\\
+                                      0, \qquad & f(o_{i}^{k}) < 0
+                                    \end{cases}
+  \end{align}
+\item PLU (parametric linear unit):
+  \begin{align}
+    \label{eq:plu-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) =
+                \begin{cases}
+                  \alpha to_{i}^{k}, \qquad & o_{i}^{k} \ge 0\\
+                  0, \qquad & o_{i}^{k} < 0
+                \end{cases}\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &=
+                                    \begin{cases}
+                                      \alpha, \qquad & f(o_{i}^{k}) \ge 0\\
+                                      0, \qquad & f(o_{i}^{k}) < 0
+                                    \end{cases}
+  \end{align}
+\item ELU (exponential linear unit):
+  \begin{align}
+    \label{eq:elu-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) =
+                \begin{cases}
+                  \alpha ( \exp(o_{i}^{k}) - 1 ), \qquad & o_{i}^{k} \ge 0\\
+                  0, \qquad & o_{i}^{k} < 0
+                \end{cases}\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &=
+                                    \begin{cases}
+                                      f(o_{i}^{k}) + \alpha, \qquad & f(o_{i}^{k}) \ge 0\\
+                                      0, \qquad & f(o_{i}^{k}) < 0
+                                    \end{cases}
+  \end{align}
+\item SoftMax:
+  \begin{align}
+    \label{eq:relu-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) = \frac{\exp(o_{i}^{k})}{\sum_{j}\exp(o_{j}^{k})}\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= f(o_{i}^{k})\delta_{ij} - f(o_{i}^{k})f(o_{j}^{k})
+  \end{align}
+\item LogSoftMax:
+  \begin{align}
+    \label{eq:relu-fun}
+    a_{i}^{k} &= f(o_{i}^{k}) = o_{i}^{k} - \log\left(
+                \sum_{j}\exp(o_{j}^{k}) \right)\\
+    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= f(o_{i}^{k})\delta_{ij} - f(o_{i}^{k})f(o_{j}^{k})
+  \end{align}
+\end{itemize}
+
+\subsection{Loss Functions}
+\label{sec:loss-fun}
+
 
 \subsubsection{Mean Squared Error}
 \label{sec:error-mse}
@@ -163,9 +251,9 @@ Eqn.~\ref{eq:error-grad} becomes
   \label{eq:error-grad-output}
   \begin{split}
     \pderiv{E_{n}}{w^{K}_{ij}} &=
-    \pderiv{E_{n}}{\hat{y}_{l}^{K}}\pderiv{\hat{y}_{l}^{K}}{a_{m}^{K}}\pderiv{\hat{a_{m}^{K}}}{w_{ij}^{K}}\\
-    &= (\hat{y}_{l}^{K} - y^{p}_{l} )f'(a_{l}^{K})\delta_{ml}\delta_{in}\delta_{jm}o_{n}^{K-1}\\
-    &= (\hat{y}_{j}^{K} - y^{p}_{j} )f'(a_{j}^{K})o_{i}^{K-1}
+    \pderiv{E_{n}}{\hat{y}_{l}^{K}}\pderiv{\hat{y}_{l}^{K}}{o_{m}^{K}}\pderiv{\hat{o_{m}^{K}}}{w_{ij}^{K}}\\
+    &= (\hat{y}_{l}^{K} - y^{p}_{l} )f'(o_{l}^{K})\delta_{ml}\delta_{in}\delta_{jm}a_{n}^{K-1}\\
+    &= (\hat{y}_{j}^{K} - y^{p}_{j} )f'(o_{j}^{K})a_{i}^{K-1}
   \end{split}
 \end{equation}
 We note that equation \ref{eq:error-grad-output} actually describes
@@ -176,25 +264,25 @@ propagation as
 \item Error propagation over the loss function layer,
   \begin{equation}
     \label{eq:error-loss-fcn}
-    \pderiv{E^{p}}{\hat{y}_{l}^{p}} &= (\hat{y}_{l}^{K} - y^{p}_{l})
+    \pderiv{E^{p}}{\hat{y}_{l}^{p}} = (\hat{y}_{l}^{K} - y^{p}_{l})
   \end{equation}
 \item Error propagation over the activation layer
   \begin{equation}
     \label{eq:error-act-fun}
-    \pderiv{E^{p}}{a_{m}^{K}} &=
-    \pderiv{E^{p}}{\hat{y}_{l}^{p}}f'(a_{l}^{K})\delta_{ml} = \pderiv{E^{p}}{\hat{y}_{m}^{p}}f'(a_{m}^{K})
+    \pderiv{E^{p}}{a_{m}^{K}} =
+    \pderiv{E^{p}}{\hat{y}_{l}^{p}}f'(o_{l}^{K})\delta_{ml} = \pderiv{E^{p}}{\hat{y}_{m}^{p}}f'(o_{m}^{K})
   \end{equation}
 \item Error propagation over the last layer $K$ to find gradient updates
   \begin{equation}
     \label{eq:error-last-layer}
-    \pderiv{E^{p}}{w_{ij}^{K}} &=
-    \pderiv{E^{p}}{a_{m}^{K}}\delta_{in}\delta_{jm}o_{n}^{K-1} = \pderiv{E^{p}}{a_{j}^{K}}o_{i}^{K-1}
+    \pderiv{E^{p}}{w_{ij}^{K}} =
+    \pderiv{E^{p}}{o_{m}^{K}}\delta_{in}\delta_{jm}a_{n}^{K-1} = \pderiv{E^{p}}{o_{j}^{K}}a_{i}^{K-1}
   \end{equation}
 \end{enumerate}
 The key here is to notice that back propagation inputs are error
 gradients on the forward pass inputs.  Gradient update rules for
 weight matrices are obtained 
-\section{Hidden Layers}
+\subsection{Hidden Layers}
 \label{sec:hidden-layers}
 
 For hidden layers $l_{k}$, $0 \le k < K$, the calculation becomes,
@@ -202,17 +290,17 @@ For hidden layers $l_{k}$, $0 \le k < K$, the calculation becomes,
   \label{eq:error-grad-hidden}
   \begin{split}
     \pderiv{E_{n}}{w^{k}_{ij}} &=
-    \pderiv{E_{n}}{a_{l}^{k}}\pderiv{a_{l}^{k}}{w_{ij}^{k}}\\
+    \pderiv{E_{n}}{o_{l}^{k}}\pderiv{o_{l}^{k}}{w_{ij}^{k}}\\
     &=
-    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{a_{l}^{k}}\pderiv{a_{l}^{k}}{w_{ij}^{k}}\\
+    \pderiv{E_{n}}{o_{m}^{k+1}}\pderiv{o_{m}^{k+1}}{o_{l}^{k}}\pderiv{o_{l}^{k}}{w_{ij}^{k}}\\
     &=
-    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{a_{l}^{k}}\delta_{jl}o_{i}^{k-1}\\
+    \pderiv{E_{n}}{o_{m}^{k+1}}\pderiv{o_{m}^{k+1}}{o_{l}^{k}}\delta_{jl}a_{i}^{k-1}\\
     &=
-    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{a_{j}^{k}}o_{i}^{k-1}\\
+    \pderiv{E_{n}}{o_{m}^{k+1}}\pderiv{o_{m}^{k+1}}{o_{j}^{k}}a_{i}^{k-1}\\
     &=
-    \pderiv{E_{n}}{a_{m}^{k+1}}\pderiv{a_{m}^{k+1}}{o_{p}^{k}}\pderiv{o_{p}^{k}}{a_{j}^{k}}o_{i}^{k-1}\\ 
+    \pderiv{E_{n}}{o_{m}^{k+1}}\pderiv{o_{m}^{k+1}}{a_{p}^{k}}\pderiv{a_{p}^{k}}{o_{j}^{k}}o_{i}^{k-1}\\ 
     &=
-    \pderiv{E_{n}}{a_{m}^{k+1}}w_{pm}^{k+1}f'(a_{p}^{k})\delta_{pj}o_{i}^{k-1}\\ 
+    \pderiv{E_{n}}{o_{m}^{k+1}}w_{pm}^{k+1}f'(o_{p}^{k})\delta_{pj}o_{i}^{k-1}\\ 
     &= \delta^{k+1}_{m}w_{jm}^{k+1}f'(a_{j}^{k})o_{i}^{k-1}\\
   \end{split}
 \end{equation}
@@ -239,7 +327,7 @@ The output layer takes $y$
   The second hidden layer could then have $50$ neurons leading to a
   weight matrix $\vect{W}^{1}$ of dimensions $(n_{0}+1) \times n_{1}$.
   Each weight matrix $\vect{W}^{k}$ would have dimensions $(n_{k-1}+1)
-  \times n_{k}$ with activation vector, $\vect{a}^{k}$ of dimension
+  \times n_{k}$ with an output vector, $\vect{o}^{k}$ of dimension
   $n_{k}$.
 \item Need to understand learning algorithm.  Run feed forward on a
   batch set of training examples then back propagate error.
