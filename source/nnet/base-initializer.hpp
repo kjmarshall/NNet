@@ -37,6 +37,9 @@ namespace NNet { // begin NNet
 		BaseInitializer( const BaseInitializer &c ) = delete ;
 		~BaseInitializer( ) = default;
 
+		// get/set member functions
+		RandomEngineType& getRandomEngine( ) { return mRandGen; }
+
 		NumericType random( ) {
 			return mRandUniformDist( mRandGen );
 		}

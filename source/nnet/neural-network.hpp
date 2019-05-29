@@ -51,6 +51,7 @@ namespace NNet { // begin NNet
 		auto const rend( ) const { return getLayers.rend( ); }
 
 		// get and set methods
+		auto& getInitializer( ) { return mInitializer; }
 		std::size_t getNumLayers( ) const { return mLayers.size( ); }
 		auto& getLayers( ) { return mLayers; }
 		auto const& getLayers( ) const { return mLayers; }

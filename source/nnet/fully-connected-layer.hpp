@@ -27,7 +27,7 @@ namespace NNet { // begin NNet
 	public: 	//public member functions
 		FullyConnectedLayer( ) = delete;
 		explicit FullyConnectedLayer( std::size_t numInputs, std::size_t numOutputs, LayerType layerType )
-			: TrainableLayer< NumericTraitsType >( numInputs, numOutputs, layerType ), mWeightMat( numInputs + 1, numOutputs ), mWeightGradMat( numInputs + 1, numOutputs ), mInputVec( numInputs), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs + 1 ) {
+			: TrainableLayer< NumericTraitsType >( numInputs, numOutputs, layerType ), mWeightMat( numInputs + 1, numOutputs ), mWeightGradMat( numInputs + 1, numOutputs ), mInputVec( numInputs + 1 ), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs + 1 ) {
 			this -> resetWeightGradMat( );
 		}
 		FullyConnectedLayer( const FullyConnectedLayer &c ) = delete;
@@ -73,7 +73,14 @@ namespace NNet { // begin NNet
 
 		// backward compute
 		void backwardCompute( VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& inputDeltaVec, VectorXType& outputDeltaVec ) override {
+			// std::cout << "Backward Compute: " << std::endl;
+			// std::cout << "mInputVec: " << std::endl
+			// 		  << mInputVec << std::endl;
+			// std::cout << "inputDeltaVec: " << std::endl
+			// 		  << inputDeltaVec.transpose( ) << std::endl;
 			mWeightGradMat += mInputVec * inputDeltaVec.transpose( );
+			// std::cout << "WeightGradMat: " << std::endl
+			// 		  << mWeightGradMat << std::endl;
 			outputDeltaVec = getWeightMat( ) * inputDeltaVec;
 			mOutputDeltaVec = outputDeltaVec;
 		};

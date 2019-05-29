@@ -15,5 +15,5 @@ sdk_list_source_files(SOURCE_FILES)
 ## ---------- ##
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 sdk_setup_project_bin(${PROJECT_NAME})
-add_dependencies(${PROJECT_NAME} back-prop )
+add_dependencies(${PROJECT_NAME} back-prop)
 target_link_libraries(${PROJECT_NAME} back-prop ${LIBS} ${EXTRA_LIBS})

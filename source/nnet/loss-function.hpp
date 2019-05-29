@@ -12,12 +12,12 @@ namespace NNet { // begin NNet
 		using VectorXType = typename NumericTraitsType::VectorXType;
 
 		// cost
-		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return ( outputVec - targetVec ).squaredNorm( );
 		}
 
 		// gradLoss
-		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return ( outputVec - targetVec );
 		}
 
@@ -29,12 +29,12 @@ namespace NNet { // begin NNet
 		using VectorXType = typename NumericTraitsType::VectorXType;
 
 		// cost
-		NumericType loss( NumericType output, NumericType target ) {
+		NumericType loss( NumericType output, NumericType target ) const {
 			return -target * std::log( output ) - ( 1.0 - output ) * std::log( 1.0 - target );
 		}
 
 		// gradLoss
-		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec )  const {
 			VectorXType onesVec = VectorXType::Ones( outputVec.size( ) );
 			return ( outputVec - targetVec ).cwiseQuotient( outputVec.cwiseProduct( onesVec - outputVec ) );
 		}
@@ -47,12 +47,12 @@ namespace NNet { // begin NNet
 		using VectorXType = typename NumericTraitsType::VectorXType;
 
 		// cost
-		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return -targetVec.dot( outputVec.array( ).log( ) );
 		}
 
 		// gradLoss
-		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec )  const {
 			return -targetVec.cwiseQuotient( outputVec );
 		}
 
@@ -64,12 +64,12 @@ namespace NNet { // begin NNet
 		using VectorXType = typename NumericTraitsType::VectorXType;
 
 		// cost
-		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return -targetVec.dot( outputVec );
 		}
 
 		// gradLoss
-		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return -targetVec;
 		}
 
@@ -93,12 +93,12 @@ namespace NNet { // begin NNet
 		~LossFunction( ) = default;
 
 		// loss
-		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return mLossFun.loss( outputVec, targetVec );
 		}
 
 		// gradLoss = \pderiv{ loss }{ \hat{y}_{i}^{p}}
-		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) {
+		VectorXType gradLoss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
 			return mLossFun.gradLoss( outputVec, targetVec );
 		}
 	private: 	//private member functions

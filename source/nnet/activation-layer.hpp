@@ -51,14 +51,15 @@ namespace NNet { // begin NNet
 	struct TanHActivation {
 		using VectorXType = typename NumericTraitsType::VectorXType;
 		void forwardActivate( VectorXType const& inputVec, VectorXType& outputVec ) const {
-			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), std::tanh );
+			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ),
+							[]( auto const& x ) { return std::tanh( x ); } );
 		}
 		void backwardActivate( VectorXType const& inputVec,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
 			auto derFun = []( auto const& output_i, auto const& deltaInput_i ) {
-				return deltaInput_i ( 1.0 - output_i * output_i );
+				return deltaInput_i * ( 1.0 - output_i * output_i );
 			};
 			std::transform( outputVec.begin( ), outputVec.end( ),
 							deltaInputVec.begin( ), deltaOutputVec.begin( ),

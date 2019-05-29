@@ -30,7 +30,7 @@ namespace NNet { // begin NNet
 
 		// get/set member functions
 		NetworkType& getNetwork( ) { return mNetwork; }
-		TrainableLayerVecType& getTrainableLayers( );
+		TrainableLayerVecType& getTrainableLayers( ) { return mTrainableLayers; };
 
 		// interface
 		void resetGradients( ) {
@@ -46,7 +46,7 @@ namespace NNet { // begin NNet
 
 	private: 	//private data members
 		NetworkType& mNetwork;
-		TrainableLayerVecType mTrainableLayers = {};
+		TrainableLayerVecType mTrainableLayers = { };
 
 	}; // end of class BaseOptimizer
 

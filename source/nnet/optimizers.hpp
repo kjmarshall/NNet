@@ -34,6 +34,11 @@ namespace NNet { // begin NNet
 				auto& weightMat = layerPtr -> getWeightMat( );
 				auto& weightGradMat = layerPtr -> getWeightGradMat( );
 				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
+				// std::cout << "LearningRate, coeff: " << mLearningRate << ", " << coeff << std::endl;
+				// std::cout << "WeightMat Before: " << weightMat.rows( ) << ", " << weightMat.cols( ) << std::endl
+				// 		  << weightMat << std::endl;
+				// std::cout << "WeightGradMat Before: " << std::endl
+				// 		  << weightGradMat << std::endl;
 				weightMat = weightMat - mLearningRate * coeff * weightGradMat;
 			}
 		}
