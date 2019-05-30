@@ -71,7 +71,9 @@ namespace NNet { // begin NNet
 	struct ArcTanActivation {
 		using VectorXType = typename NumericTraitsType::VectorXType;
 		void forwardActivate( VectorXType const& inputVec, VectorXType& outputVec ) const {
-			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), std::atan );
+			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), []( auto const& x ) {
+					return std::atan( x );
+				} );
 		}
 		void backwardActivate( VectorXType const& inputVec,
 							   VectorXType const& outputVec,
@@ -222,10 +224,10 @@ namespace NNet { // begin NNet
 	public: 	//public member functions
 		ActivationLayer( ) = delete;
 		explicit ActivationLayer( std::size_t numInputs, std::size_t numOutputs, ActFunType const& actFun )
-			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun( actFun ) {
+			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun( actFun ), mInputVec( numInputs ), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs ) {
 		}
 		explicit ActivationLayer( std::size_t numInputs, ActFunType const& actFun )
-			: BaseLayer< NumericTraitsType >( numInputs, numInputs, LayerType::ACTIVATION ), mActFun( actFun ) {
+			: BaseLayer< NumericTraitsType >( numInputs, numInputs, LayerType::ACTIVATION ), mActFun( actFun ), mInputVec( numInputs ), mOutputVec( numInputs ), mOutputDeltaVec( numInputs ) {
 		}
 		ActivationLayer( const ActivationLayer &c ) = delete;
 		~ActivationLayer( ) = default;
@@ -255,8 +257,8 @@ namespace NNet { // begin NNet
 
 		// backward compute
 		void backwardCompute( VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& inputDeltaVec, VectorXType& outputDeltaVec ) override {
-			mActFun.backwardActivate( mInputVec, mOutputVec, inputDeltaVec, outputDeltaVec );
-			mOutputDeltaVec = outputDeltaVec;
+			mActFun.backwardActivate( mInputVec, mOutputVec, inputDeltaVec, mOutputDeltaVec );
+			outputDeltaVec = mOutputDeltaVec;
 		}
 	private: 	//private member functions
 

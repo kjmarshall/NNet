@@ -27,7 +27,12 @@ namespace NNet { // begin NNet
 	public: 	//public member functions
 		FullyConnectedLayer( ) = delete;
 		explicit FullyConnectedLayer( std::size_t numInputs, std::size_t numOutputs, LayerType layerType )
-			: TrainableLayer< NumericTraitsType >( numInputs, numOutputs, layerType ), mWeightMat( numInputs + 1, numOutputs ), mWeightGradMat( numInputs + 1, numOutputs ), mInputVec( numInputs + 1 ), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs + 1 ) {
+			: TrainableLayer< NumericTraitsType >( numInputs, numOutputs, layerType ),
+			mWeightMat( numInputs + 1, numOutputs ),
+			mWeightGradMat( numInputs + 1, numOutputs ),
+			mInputVec( numInputs + 1 ),
+			mOutputVec( numOutputs ),
+			mOutputDeltaVec( numInputs + 1 ) {
 			this -> resetWeightGradMat( );
 		}
 		FullyConnectedLayer( const FullyConnectedLayer &c ) = delete;
@@ -82,6 +87,8 @@ namespace NNet { // begin NNet
 			// std::cout << "WeightGradMat: " << std::endl
 			// 		  << mWeightGradMat << std::endl;
 			outputDeltaVec = getWeightMat( ) * inputDeltaVec;
+			auto rows = outputDeltaVec.rows( );
+			outputDeltaVec = outputDeltaVec.segment( 0, rows - 1 );
 			mOutputDeltaVec = outputDeltaVec;
 		};
 

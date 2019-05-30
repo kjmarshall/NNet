@@ -97,6 +97,7 @@ namespace NNet { // begin NNet
 					auto fanIns = layer -> getNumInputs( );
 					auto fanOuts = layer -> getNumOutputs( );
 					mInitializer.initWeightMat( weightMat, fanIns, fanOuts );
+					weightMat.row( weightMat.rows( ) -1 ).setZero( ); // bias set to zero...
 				}
 			}
 		}

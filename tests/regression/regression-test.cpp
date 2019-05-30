@@ -22,7 +22,9 @@ int main(int argc, char *argv[]) {
 	// import data
 	using DataHandlerType = RegressionDataHandler< NumericTraitsType::VectorXType, NumericTraitsType::VectorXType >;
 	DataHandlerType dataHandler;
-	dataHandler.loadData( "../tests/data/bessel_1.data", "", ' ' );
+	std::string trainingDataFilePath = "../tests/data/bessel_1_noisy.data";
+	std::string preditionFilePath = "../tests/data/bessel_1_noisy.prediction";
+	dataHandler.loadData( trainingDataFilePath, "", ' ' );
 	// dataHandler.printData( );
 
 	// declare layer types
@@ -30,34 +32,38 @@ int main(int argc, char *argv[]) {
 
 	// create activation functions
 	// using ActFunType = LogisticActivation< NumericTraitsType >;
-	using ActFunType = TanHActivation< NumericTraitsType >;
-	using ActLayerType = ActivationLayer< NumericTraitsType, TanHActivation >;
+	// using ActFunType = TanHActivation< NumericTraitsType >;
+	using ActFunType = ArcTanActivation< NumericTraitsType >;
+	using ActLayerType = ActivationLayer< NumericTraitsType, ArcTanActivation >;
 	ActFunType actFun;
 
 	// create the neural network initializer
-	using InitializerType = HeInitializer< NumericTraitsType >;
+	using InitializerType = GlorotInitializer< NumericTraitsType >;
 	InitializerType initializer;
 
 	// create the neural network
 	using NetworkType = NeuralNetwork< NumericTraitsType, InitializerType >;
 	NetworkType nnet( initializer );
-	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 1, 20, LayerType::INPUT ) );
+	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 1, 30, LayerType::INPUT ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 30, actFun ) );
+	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 30, 20, LayerType::HIDDEN ) );
 	nnet.addLayer( std::make_shared< ActLayerType >( 20, actFun ) );
-	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 20, 20, LayerType::HIDDEN ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 20, actFun ) );
-	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 20, 1, LayerType::HIDDEN ) );
+	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 20, 10, LayerType::HIDDEN ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 10, actFun ) );
+	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 10, 1, LayerType::HIDDEN ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 1, actFun ) );
 	nnet.finalize( );
 	nnet.printNetworkInfo( );
 
 	// create the network trainer
 	// using OptimizerType = SGDOptimizer< NetworkType >;
 	using OptimizerType = NesterovMomentumOptimizer< NetworkType >;
-	OptimizerType optimizer( nnet, 0.01 );
+	OptimizerType optimizer( nnet, 0.005 );
 	using NetworkTrainerType = NetworkTrainer< NetworkType, OptimizerType, MSELossFuction, DataHandlerType >;
 	NetworkTrainerType networkTrainer( nnet, optimizer, dataHandler );
 
 	for ( std::size_t i = 0; i < 1000; ++i ) {
-		auto epochLoss = networkTrainer.trainEpoch( 50 );
+		auto epochLoss = networkTrainer.trainEpoch( 5 );
 		std::cout << "Epoch Loss <" << i << ">: " << epochLoss << std::endl;
 	}
 
@@ -69,7 +75,7 @@ int main(int argc, char *argv[]) {
 		}
 	};
 	// computePrediction( std::cout, dataHandler.getTrainingData( ) );
-	std::ofstream OFS_PREDICT( "prediction.data" );
+	std::ofstream OFS_PREDICT( preditionFilePath );
 	computePrediction( OFS_PREDICT, dataHandler.getTrainingData( ) );
 
 	return 0;

@@ -77,6 +77,7 @@ namespace NNet { // begin NNet
 			for ( auto layerIter = getNetwork( ).rbegin( ) + 1; layerIter != getNetwork( ).rend( ); ++layerIter ) {
 				auto& layerPtr = (*layerIter);
 				layerPtr -> backwardCompute( dummyVec, dummyVec, inputDeltaWorkVec, outputDeltaWorkVec );
+				inputDeltaWorkVec = outputDeltaWorkVec;
 			}
 		}
 		NumericType runSingleSample( VectorXType const& inputVec,
