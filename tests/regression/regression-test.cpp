@@ -62,11 +62,6 @@ int main(int argc, char *argv[]) {
 	using NetworkTrainerType = NetworkTrainer< NetworkType, OptimizerType, MSELossFuction, DataHandlerType >;
 	NetworkTrainerType networkTrainer( nnet, optimizer, dataHandler );
 
-	for ( std::size_t i = 0; i < 1000; ++i ) {
-		auto epochLoss = networkTrainer.trainEpoch( 5 );
-		std::cout << "Epoch Loss <" << i << ">: " << epochLoss << std::endl;
-	}
-
 	auto computePrediction = [&]( std::ostream& os, auto const& data ) {
 		for ( auto const& dataPair : data ) {
 			auto const& input = dataHandler.getInput( dataPair );
@@ -74,6 +69,23 @@ int main(int argc, char *argv[]) {
 			os << input << " " << networkTrainer.getNetwork( ).getLastOutput( ) << std::endl;
 		}
 	};
+
+	std::stringstream ss;
+	std::size_t predCtr = 0;
+	for ( std::size_t i = 0; i < 1000; ++i ) {
+		if ( predCtr % 10 == 0 ) {
+			ss << "../tests/data/evo/pred_"  << predCtr << ".data";
+			std::ofstream OFS( ss.str( ).c_str( ) );
+			computePrediction( OFS, dataHandler.getTrainingData( ) );
+			OFS.close( );
+			std::stringstream( ).swap( ss );
+		}
+		predCtr++;
+
+		auto epochLoss = networkTrainer.trainEpoch( 5 );
+		std::cout << "Epoch Loss <" << i << ">: " << epochLoss << std::endl;
+	}
+
 	// computePrediction( std::cout, dataHandler.getTrainingData( ) );
 	std::ofstream OFS_PREDICT( preditionFilePath );
 	computePrediction( OFS_PREDICT, dataHandler.getTrainingData( ) );

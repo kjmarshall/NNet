@@ -48,7 +48,7 @@ namespace NNet { // begin NNet
 
 		// cost
 		NumericType loss( VectorXType const& outputVec, VectorXType const& targetVec ) const {
-			return -targetVec.dot( outputVec.array( ).log( ) );
+			return -targetVec.dot( outputVec.array( ).log( ).matrix( ) );
 		}
 
 		// gradLoss

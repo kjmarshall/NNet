@@ -18,7 +18,9 @@ namespace NNet { // begin NNet
 	class BaseDataHandler {
 	public: 	// public typedefs
 		using DataPairType = std::pair< InputDataType, TargetDataType >;
-		using DataVectorType = std::vector< DataPairType >;
+		using VectorInputDataType = std::vector< InputDataType >;
+		using VectorTargetDataType = std::vector< TargetDataType >;
+		using VectorDataPairType = std::vector< DataPairType >;
 
 	private: 	// private typedefs
 
@@ -28,16 +30,16 @@ namespace NNet { // begin NNet
 		~BaseDataHandler( ) = default;
 
 		// get/set member functions
-		DataVectorType& getTrainingData( ) { return mTrainingData; }
-		DataVectorType const& getTrainingData( ) const { return mTrainingData; }
-		DataVectorType& getTestingData( ) { return mTestingData; }
-		DataVectorType const& getTestingData( ) const { return mTestingData; }
+		VectorDataPairType& getTrainingData( ) { return mTrainingData; }
+		VectorDataPairType const& getTrainingData( ) const { return mTrainingData; }
+		VectorDataPairType& getTestingData( ) { return mTestingData; }
+		VectorDataPairType const& getTestingData( ) const { return mTestingData; }
 
 		auto const& getInput( DataPairType const& dataPair ) { return dataPair.first; }
 		auto const& getTarget( DataPairType const& dataPair ) { return dataPair.second; }
 
 		// interface functions
-		virtual void loadData( std::string const& trainingDataPath, std::string const& testingDataPath, char delimiter ) = 0;
+		virtual void loadData( std::string const& trainingDataPath, std::string const& testingDataPath, char delimiter ) { };
 
 		void printData( std::ostream& os = std::cout ) {
 			auto dataPrinter = [&]( auto const& data, std::string const& title ) {
@@ -72,7 +74,7 @@ namespace NNet { // begin NNet
 	public: 	//public data members
 
 	private: 	//private data members
-		DataVectorType mTrainingData = { }, mTestingData = { };
+		VectorDataPairType mTrainingData = { }, mTestingData = { };
 	}; // end of class BaseDataHandler
 
 } // end NNet
