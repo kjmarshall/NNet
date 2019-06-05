@@ -22,8 +22,8 @@ int main(int argc, char *argv[]) {
 	// import data
 	using DataHandlerType = RegressionDataHandler< NumericTraitsType::VectorXType, NumericTraitsType::VectorXType >;
 	DataHandlerType dataHandler;
-	std::string trainingDataFilePath = "../tests/data/bessel_1_noisy.data";
-	std::string preditionFilePath = "../tests/data/bessel_1_noisy.prediction";
+	std::string trainingDataFilePath = "../tests/data/regression/regression_bessel/bessel_1_noisy.data";
+	std::string predictionFilePath = "../tests/data/regression/regression_bessel/bessel_1_noisy.prediction";
 	dataHandler.loadData( trainingDataFilePath, "", ' ' );
 	// dataHandler.printData( );
 
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// computePrediction( std::cout, dataHandler.getTrainingData( ) );
-	std::ofstream OFS_PREDICT( preditionFilePath );
+	std::ofstream OFS_PREDICT( predictionFilePath );
 	computePrediction( OFS_PREDICT, dataHandler.getTrainingData( ) );
 
 	return 0;
