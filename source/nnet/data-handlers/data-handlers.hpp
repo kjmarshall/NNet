@@ -6,7 +6,7 @@
 #include <fstream>
 
 // Own includes --------------------
-#include "nnet/base-data-handler.hpp"
+#include "data-handlers/base-data-handler.hpp"
 #include "utils/utility-functions.hpp"
 
 namespace NNet { // begin NNet

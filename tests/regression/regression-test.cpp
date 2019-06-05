@@ -4,13 +4,13 @@
 #include <string>
 
 // Own includes --------------------
-#include "nnet/activation-layer.hpp"
-#include "nnet/fully-connected-layer.hpp"
-#include "nnet/neural-network.hpp"
-#include "nnet/weight-initializer.hpp"
-#include "nnet/network-trainer.hpp"
-#include "nnet/optimizers.hpp"
-#include "nnet/data-handlers.hpp"
+#include "layers/activation-layer.hpp"
+#include "layers/fully-connected-layer.hpp"
+#include "networks/neural-network.hpp"
+#include "initializers/weight-initializer.hpp"
+#include "networks/network-trainer.hpp"
+#include "optimizers/optimizers.hpp"
+#include "data-handlers/data-handlers.hpp"
 
 using namespace NNet;
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 20, 10, LayerType::HIDDEN ) );
 	nnet.addLayer( std::make_shared< ActLayerType >( 10, actFun ) );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 10, 1, LayerType::HIDDEN ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 1, actFun ) );
+	// nnet.addLayer( std::make_shared< ActLayerType >( 1, actFun ) );
 	nnet.finalize( );
 	nnet.printNetworkInfo( );
 
@@ -70,17 +70,17 @@ int main(int argc, char *argv[]) {
 		}
 	};
 
-	std::stringstream ss;
-	std::size_t predCtr = 0;
+	// std::stringstream ss;
+	// std::size_t predCtr = 0;
 	for ( std::size_t i = 0; i < 1000; ++i ) {
-		if ( predCtr % 10 == 0 ) {
-			ss << "../tests/data/evo/pred_"  << predCtr << ".data";
-			std::ofstream OFS( ss.str( ).c_str( ) );
-			computePrediction( OFS, dataHandler.getTrainingData( ) );
-			OFS.close( );
-			std::stringstream( ).swap( ss );
-		}
-		predCtr++;
+		// if ( predCtr % 10 == 0 ) {
+		// 	ss << "../tests/data/evo/pred_"  << predCtr << ".data";
+		// 	std::ofstream OFS( ss.str( ).c_str( ) );
+		// 	computePrediction( OFS, dataHandler.getTrainingData( ) );
+		// 	OFS.close( );
+		// 	std::stringstream( ).swap( ss );
+		// }
+		// predCtr++;
 
 		auto epochLoss = networkTrainer.trainEpoch( 5 );
 		std::cout << "Epoch Loss <" << i << ">: " << epochLoss << std::endl;

@@ -81,5 +81,6 @@ list( APPEND INCLUDES "${EIGEN_INCLUDE_DIRS}" )
 ## ------------ ##
 include_directories( "${INCLUDES}" )
 include_directories( "${PROJECT_SOURCE_DIR}/source" )
+include_directories( "${PROJECT_SOURCE_DIR}/source/nnet" )
 add_subdirectory( source )
 add_subdirectory( tests )

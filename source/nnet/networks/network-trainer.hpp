@@ -2,7 +2,7 @@
 #define NETWORK_TRAINER_HPP
 
 // Own includes --------------------
-#include "nnet/loss-function.hpp"
+#include "loss/loss-function.hpp"
 
 namespace NNet { // begin NNet
 

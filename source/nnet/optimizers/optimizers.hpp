@@ -2,7 +2,7 @@
 #define OPTIMIZERS_HPP
 
 // Own includes --------------------
-#include "nnet/base-optimizer.hpp"
+#include "optimizers/base-optimizer.hpp"
 
 namespace NNet { // begin NNet
 
