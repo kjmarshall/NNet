@@ -25,7 +25,7 @@
 \author{Kevin J. Marshall}
 \maketitle
 
-\section{Feedforward Neural Network}
+\section{Feedforward Neural Networks}
 \label{sec:ff-=nn}
 The basic computational units of a neural network (NN) are called neurons
 and are grouped together in finite sets called layers.  The structure of a
@@ -47,8 +47,8 @@ on neurons from the set of layers $\{l_{j<k}\}$.
 \subsection{Matrix Representation}
 \label{sec:matrix-rep}
 
-During training a set of $N$ vector valued input-output pairs $\{(\vx_{0},\vy_{0}), \dots,
-(\vx_{N},\vy_{N})\}$ is fed into the network.  For each layer, $k$, the
+During training, a set of $N$ vector valued input-output pairs $\{(\vx_{0},\vy_{0}), \dots,
+(\vx_{N},\vy_{N})\}$ is fed into the network often in .  For each layer, $k$, the
 following computation is carried out,
 \begin{align}
   \label{eq:activation-component}
@@ -92,9 +92,9 @@ In these equations
   the functions midpoint, and $r$ is the logistic growth rate
   (steepness of the curve).  Standard practice uses $A=1, r=1, x_{0} =
   0$ which centers the function at $x=0$ and scales the input between
-  to $(0,1)$
+  to $(0,1)$.
 \end{itemize}
-Once the information flow reaches the output layer $l_{K}$, an error
+Once the information flow reaches the output layer, $l_{K}$, an error
 may be computed for each input based on the nodal output values
 $\hat{y}_{n}$ and the target values $y_{n}$.  Gradient decent
 techniques attempt to minimize the error by adjusting the weights.
@@ -189,7 +189,7 @@ $\vect{a}^{k}$ to be the associated output.
     \label{eq:plu-fun}
     a_{i}^{k} &= f(o_{i}^{k}) =
                 \begin{cases}
-                  \alpha to_{i}^{k}, \qquad & o_{i}^{k} \ge 0\\
+                  \alpha o_{i}^{k}, \qquad & o_{i}^{k} \ge 0\\
                   0, \qquad & o_{i}^{k} < 0
                 \end{cases}\\
     \pderiv{a_{i}^{k}}{o_{i}^{k}} &=
@@ -216,14 +216,14 @@ $\vect{a}^{k}$ to be the associated output.
   \begin{align}
     \label{eq:relu-fun}
     a_{i}^{k} &= f(o_{i}^{k}) = \frac{\exp(o_{i}^{k})}{\sum_{j}\exp(o_{j}^{k})}\\
-    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= f(o_{i}^{k})\delta_{ij} - f(o_{i}^{k})f(o_{j}^{k})
+    \pderiv{a_{i}^{k}}{o_{j}^{k}} &= f(o_{i}^{k})\delta_{ij} - f(o_{i}^{k})f(o_{j}^{k})
   \end{align}
 \item LogSoftMax:
   \begin{align}
     \label{eq:relu-fun}
     a_{i}^{k} &= f(o_{i}^{k}) = o_{i}^{k} - \log\left(
                 \sum_{j}\exp(o_{j}^{k}) \right)\\
-    \pderiv{a_{i}^{k}}{o_{i}^{k}} &= f(o_{i}^{k})\delta_{ij} - f(o_{i}^{k})f(o_{j}^{k})
+    \pderiv{a_{i}^{k}}{o_{j}^{k}} &= \delta_{ij} - \exp_{i}(f(o_{j}^{k}))
   \end{align}
 \end{itemize}
 
