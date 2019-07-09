@@ -27,11 +27,11 @@
 
 \section{Feedforward Neural Networks}
 \label{sec:ff-=nn}
-The basic computational units of a neural network (NN) are called neurons
-and are grouped together in finite sets called layers.  The structure of a
-general neural network consists of an input layer followed by a finite
-set of hidden computational layers and a final output layer.  In
-feedforward NNs, information flows in a single direction from the
+The basic computational units of a neural network (NN) are called
+neurons.  Neurons are grouped together in finite sets called layers.
+The structure of a neural network consists of an input layer followed
+by a finite set of hidden computational layers and a final output
+layer.  In feedforward NNs, information flows in a single direction from the
 inputs to the outputs and the computation graph may always be
 interpreted as a directed acyclic
 graph (DAG).  Since the computational graph is a DAG, the neural
@@ -39,7 +39,7 @@ network may always be arranged such that each layer of the feedforward
 NN only depends on  the layer to its left (the input side).  This can
 be accomplished by performing a topological sort on the neurons
 (nodes) of the DAG and
-grouping them into layers $l_{k}$ with depth $k$ where $l_{k}$ is the
+grouping them into layers $l_{k}$ with depth $k$ where $l_{k} \equiv \{n_{0},\dots,n_{k-1}\}$ is the
 set of all neurons in layer $k$.  Upon arranging the $K$ layers from
 $l_{0},l_{1},\dots,l_{K}$ each layer's neuron set $l_{k}$ will only depend
 on neurons from the set of layers $\{l_{j<k}\}$.
@@ -48,7 +48,7 @@ on neurons from the set of layers $\{l_{j<k}\}$.
 \label{sec:matrix-rep}
 
 During training, a set of $N$ vector valued input-output pairs $\{(\vx_{0},\vy_{0}), \dots,
-(\vx_{N},\vy_{N})\}$ is fed into the network often in .  For each layer, $k$, the
+(\vx_{N-1},\vy_{N-1})\}$ is fed into the network.  For each layer, $k$, the
 following computation is carried out,
 \begin{align}
   \label{eq:activation-component}
@@ -68,14 +68,14 @@ where the associated vector expressions are
 In these equations
 \begin{itemize}
 \item $o_{j}^{k}$ is the output computation of neuron $j$ in layer $k$
-  and $\vect{o}^{k}$ has dimensions $|n_{k}+1|$ including a bias term
+  and $\vect{o}^{k}$ is a vector with row dimension $|n_{k}+1|$ including a bias term.
 \item $a_{j}^{k}$ is the nonlinear output or activation of neuron $j$ in layer $k$ after
   passing through the nonlinear function $f(\cdot)$
 \item $\vect{W}^{k}$ is the weight matrix of layer $k$ such that
   elements $W_{ij}^{k}$ describe the weight associated with the $i$'th
   neuron input in layer $k-1$ to the $j$'th neuron in layer $k$.
-  The dimensions of the weight matrix are $( n_{k-1} + 1 ) \times
-  n_{k}$ where $n_{k-1} = |l_{k-1}|$ and $n_{k}
+  The dimensions of the weight matrix are $( d_{k-1} + 1 ) \times
+  d_{k}$ where $d_{k-1} = |l_{k-1}|$ and $d_{k}
   = |l_{k}|$ are the number of neurons in layers $k-1$ and $k$ and
   $+1$ accounts for weights associated with the bias neuron.
 \item $f(\cdot;j,k)$ is a nonlinear activation function $f: \mathbb{R}^{n_{k}} \to
@@ -83,7 +83,7 @@ In these equations
   this function is taken to be the same for all neurons in all hidden
   layers,
   $f( \cdot; j,k ) = f( \cdot )$, and often takes the form of the
-  logistic function:
+  logistic function
   \begin{equation}
     \label{eq:logistic-fun}
     f(x) = \frac{A}{1+\exp(-r(x-x_{0}))}
@@ -92,7 +92,8 @@ In these equations
   the functions midpoint, and $r$ is the logistic growth rate
   (steepness of the curve).  Standard practice uses $A=1, r=1, x_{0} =
   0$ which centers the function at $x=0$ and scales the input between
-  to $(0,1)$.
+  to $(0,1)$ however the shape of this curve may adjusted in order to
+  transform and/or scale layer outputs.
 \end{itemize}
 Once the information flow reaches the output layer, $l_{K}$, an error
 may be computed for each input based on the nodal output values
@@ -132,7 +133,7 @@ that $\vect{W}^{T}$ is given by
 for $|l_{k}|=n_{k}$ and $|l_{k-1}|=n_{k-1}$ neurons in layers $k$ and $k-1$ and a bias
 weight vector of $[w_{b_{k-1}0},\dots,w_{b_{k-1}n_{k}}]^{T}$.  In
 general, layers contain a decreasing number of nodes as the depth
-increases, i.e. $n_{k} \le n_{k-1}$.
+increases, i.e. $|l_{k}| \le |n_{k-1}|$.
 
 \subsection{Activation Functions}
 \label{sec:activation-fun}
@@ -280,8 +281,8 @@ propagation as
   \end{equation}
 \end{enumerate}
 The key here is to notice that back propagation inputs are error
-gradients on the forward pass inputs.  Gradient update rules for
-weight matrices are obtained 
+gradients computed on the forward pass inputs.  Gradient update rules for
+weight matrices are obtained using stochastic variations on Euler's method.
 \subsection{Hidden Layers}
 \label{sec:hidden-layers}
 
