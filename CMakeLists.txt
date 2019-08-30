@@ -32,9 +32,9 @@ set(${PROJECT_NAME}_VERSION
 ## --------------- ##
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake-modules)
 
-## ----------------------- ##
-## Include Custome Modules ##
-## ----------------------- ##
+## ---------------------- ##
+## Include Custom Modules ##
+## --------------------- ##
 include(compiler-flags)
 include(custom-cmake-settings)
 include(helper-functions)
@@ -75,6 +75,26 @@ list( APPEND INCLUDES "${EIGEN_INCLUDE_DIRS}" )
 #   list( APPEND CUDA_NVCC_FLAGS "-gencode arch=compute_35,code=sm_35")
 #   # set( CUDA_PROPAGATE_HOST_FLAGS OFF )
 # endif( )
+
+## ----------- ##
+## Google Test ##
+## ----------- ##
+option(PACKAGE_TESTS "Build the tests" ON)
+if(PACKAGE_TESTS)
+  enable_testing()
+endif()
+set( GOOGLE_TEST_DIR "${PROJECT_SOURCE_DIR}/external/googletest" )
+add_subdirectory( "${GOOGLE_TEST_DIR}" EXCLUDE_FROM_ALL )
+mark_as_advanced(
+  BUILD_GMOCK BUILD_GTEST BUILD_SHARED_LIBS
+  gmock_build_tests gtest_build_samples gtest_build_tests
+  gtest_disable_pthreads gtest_force_shared_crt gtest_hide_internal_symbols
+  )
+set_target_properties(gtest PROPERTIES FOLDER external)
+set_target_properties(gtest_main PROPERTIES FOLDER external)
+set_target_properties(gmock PROPERTIES FOLDER external)
+set_target_properties(gmock_main PROPERTIES FOLDER external)
+list( APPEND INCLUDES "${GOOGLE_TEST_DIR}/googletest/include" )
 
 ## ------------ ##
 ## Add projects ##
