@@ -34,11 +34,9 @@ int main(int argc, char *argv[]) {
 	// create activation functions
 	using ActFunType = LogisticActivation< NumericTraitsType >;
 	using ActLayerType = ActivationLayer< NumericTraitsType, LogisticActivation >;
-	ActFunType actFun;
 
 	using SoftMaxActFunType = SoftMaxActivation< NumericTraitsType >;
 	using SoftMaxActLayerType = ActivationLayer< NumericTraitsType, SoftMaxActivation >;
-	SoftMaxActFunType softMaxActFun;
 
 	// create the neural network initializer
 	using InitializerType = GlorotInitializer< NumericTraitsType >;
@@ -48,11 +46,11 @@ int main(int argc, char *argv[]) {
 	using NetworkType = NeuralNetwork< NumericTraitsType, InitializerType >;
 	NetworkType nnet( initializer );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 784, 300, LayerType::INPUT ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 300, actFun ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 300 ) );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 300, 100, LayerType::HIDDEN ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 100, actFun ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 100 ) );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 100, 10, LayerType::HIDDEN ) );
-	nnet.addLayer( std::make_shared< SoftMaxActLayerType >( 10, softMaxActFun ) );
+	nnet.addLayer( std::make_shared< SoftMaxActLayerType >( 10 ) );
 	nnet.finalize( );
 	nnet.printNetworkInfo( );
 

@@ -45,11 +45,11 @@ int main(int argc, char *argv[]) {
 	using NetworkType = NeuralNetwork< NumericTraitsType, InitializerType >;
 	NetworkType nnet( initializer );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 1, 30, LayerType::INPUT ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 30, actFun ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 30 ) );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 30, 20, LayerType::HIDDEN ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 20, actFun ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 20 ) );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 20, 10, LayerType::HIDDEN ) );
-	nnet.addLayer( std::make_shared< ActLayerType >( 10, actFun ) );
+	nnet.addLayer( std::make_shared< ActLayerType >( 10 ) );
 	nnet.addLayer( std::make_shared< FullyConnectedLayerType >( 10, 1, LayerType::HIDDEN ) );
 	// nnet.addLayer( std::make_shared< ActLayerType >( 1, actFun ) );
 	nnet.finalize( );
