@@ -47,6 +47,20 @@ set( LIBS "" )
 set( EXTRA_LIBS "" )
 set( DEFINITIONS "" )
 
+## --------------- ##
+## Check for Boost ##
+## --------------- ##
+find_package( Boost REQUIRED COMPONENTS serialization )
+if ( Boost_FOUND )
+  include_directories( "${Boost_INCLUDE_DIRS}" )
+  link_directories( "${Boost_LIBRARY_DIRS}" )
+  list( APPEND LIBS "${Boost_LIBRARIES}" )
+elseif()
+  message("Boost not found.")
+endif()
+
+
+
 ## ---------------- ##
 ## Check for OpenMP ##
 ## ---------------- ##

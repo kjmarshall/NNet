@@ -10,6 +10,7 @@
 // Own includes --------------------
 #include "utils/numeric-traits.hpp"
 #include "base-layer.hpp"
+#include "serialization/serialize.hpp"
 
 namespace NNet { // begin NNet
 
@@ -222,17 +223,24 @@ namespace NNet { // begin NNet
 	private: 	// private typedefs
 
 	public: 	//public member functions
-		ActivationLayer( ) = delete;
-		explicit ActivationLayer( std::size_t numInputs, std::size_t numOutputs, ActFunType const& actFun )
-			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun( actFun ), mInputVec( numInputs ), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs ) {
+		ActivationLayer( )
+			: BaseLayer< NumericTraitsType >( 0, 0, LayerType::ACTIVATION ), mActFun(), mInputVec( 0 ), mOutputVec( 0 ), mOutputDeltaVec( 0 ) {
 		}
-		explicit ActivationLayer( std::size_t numInputs, ActFunType const& actFun )
-			: BaseLayer< NumericTraitsType >( numInputs, numInputs, LayerType::ACTIVATION ), mActFun( actFun ), mInputVec( numInputs ), mOutputVec( numInputs ), mOutputDeltaVec( numInputs ) {
+		explicit ActivationLayer( std::size_t numInputs, std::size_t numOutputs )
+			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun(), mInputVec( numInputs ), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs ) {
+		}
+		explicit ActivationLayer( std::size_t numInputs )
+			: BaseLayer< NumericTraitsType >( numInputs, numInputs, LayerType::ACTIVATION ), mActFun(), mInputVec( numInputs ), mOutputVec( numInputs ), mOutputDeltaVec( numInputs ) {
+		}
+		explicit ActivationLayer( std::size_t numInputs, std::size_t numOutputs, VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& outputDeltaVec )
+			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun(), mInputVec( inputVec ), mOutputVec( outputVec ), mOutputDeltaVec( outputDeltaVec ) {
 		}
 		ActivationLayer( const ActivationLayer &c ) = delete;
 		~ActivationLayer( ) = default;
 
 		// get/set member functions
+		VectorXType& getInputVec( )	{ return mInputVec; }
+		VectorXType const& getInputVec( ) const { return mInputVec; }
 		VectorXType& getOutputVec( ) override { return mOutputVec; }
 		VectorXType const& getOutputVec( ) const override { return mOutputVec; }
 		void setOutputVec( VectorXType const& outputVec ) { mOutputVec = outputVec; }
@@ -240,6 +248,8 @@ namespace NNet { // begin NNet
 		VectorXType const& getOutputDeltaVec( ) const override { return mOutputDeltaVec; }
 
 		// identifiers and information
+		ActFunType& getActFun( ) { return mActFun; }
+		ActFunType const& getActFun( ) const { return mActFun; }
 		void printLayerInfo( std::ostream& os = std::cout ) const override {
 			std::cout << "Layer Type: " << this -> getLayerType( ) << std::endl;
 			os << "Inputs, Outputs: " << this -> getNumInputs( ) << ", " << this -> getNumOutputs( ) << std::endl;
@@ -265,11 +275,72 @@ namespace NNet { // begin NNet
 	public: 	//public data members
 
 	private: 	//private data members
-		ActFunType const& mActFun;
+		ActFunType mActFun;
 		VectorXType mInputVec, mOutputVec;
 		VectorXType mOutputDeltaVec;
 	}; // end of class ActivationLayer
 
 } // end NNet
+
+namespace boost::serialization { // begin boost::serialization
+	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
+	void serialize( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >& obj, unsigned const version ) {
+		ar & boost::serialization::base_object< NNet::BaseLayer< NumericTraitsType > >( obj );
+		ar & obj.getInputVec();
+		ar & obj.getOutputVec();
+		ar & obj.getOutputDeltaVec();
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
+	void save_construct_data( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun > const* obj, unsigned const version ) {
+		std::cout << "Call Save Construct Data" << std::endl;
+		std::size_t numInputs, numOutputs;
+		numInputs = obj->getNumInputs();
+		numOutputs = obj->getNumOutputs();
+		std::cout << "save numInputs: " << numInputs << std::endl;
+		std::cout << "save numOutputs: " << numOutputs << std::endl;
+		ar << numInputs;
+		ar << numOutputs;
+		// typename NNet::ActivationLayer< NumericTraitsType, ActFun >::VectorXType inputVec, outputVec, outputDeltaVec;
+		auto const& inputVec = obj->getInputVec();
+		auto const& outputVec = obj->getOutputVec();
+		auto const& outputDeltaVec = obj->getOutputDeltaVec();
+		ar << inputVec;
+		ar << outputVec;
+		ar << outputDeltaVec;
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
+	void load_construct_data( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >* obj, unsigned const version ) {
+		std::cout << "Call Load Construct Data" << std::endl;
+		std::size_t numInputs, numOutputs;
+		ar >> numInputs;
+		ar >> numOutputs;
+		std::cout << "load numInputs: " << numInputs << std::endl;
+		std::cout << "load numOutputs: " << numOutputs << std::endl;
+		typename NNet::ActivationLayer< NumericTraitsType, ActFun >::VectorXType inputVec, outputVec, outputDeltaVec;
+		ar >> inputVec;
+		ar >> outputVec;
+		ar >> outputDeltaVec;
+		std::cout << "load inputVec: " << inputVec.size() << std::endl;
+		std::cout << "load outputVec: " << outputVec.size() << std::endl;
+		std::cout << "load outputDeltaVec: " << outputDeltaVec.size() << std::endl;
+		::new( obj )NNet::ActivationLayer< NumericTraitsType, ActFun >( numInputs, numOutputs, inputVec, outputVec, outputDeltaVec );
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::IdentityActivation< NumericTraitsType >& obj, unsigned const version ) {
+		std::cout << "Ser IdentityActivation" << std::endl;
+	}
+	// IdentityActivation< NumericTraitsType >
+	// LogisticActivation< NumericTraitsType >
+	// TanHActivation< NumericTraitsType >
+	// ArcTanActivation< NumericTraitsType >
+	// ReLUActivation< NumericTraitsType >
+	// PReLUActivation< NumericTraitsType >
+	// ELUActivation< NumericTraitsType >
+	// SoftMaxActivation< NumericTraitsType >
+	// LogSoftMaxActivation< NumericTraitsType >
+} // end boost::serialization
 
 #endif // ACTIVATION_LAYER_HPP

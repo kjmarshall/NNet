@@ -1,6 +1,10 @@
 #ifndef BASE_OPTIMIZER_HPP
 #define BASE_OPTIMIZER_HPP
 
+// System includes --------------------
+#include <vector>
+#include <memory>
+
 namespace NNet { // begin NNet
 
 	/**
