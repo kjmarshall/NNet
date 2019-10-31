@@ -77,6 +77,7 @@ namespace NNet { // begin NNet
 } // end NNet
 
 namespace boost::serialization { // begin boost::serialization
+
 	template< typename ArchiveType, typename NumericTraitsType >
 	void serialize( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType >& obj, unsigned const version ) {
 		std::size_t numInputs = obj.getNumInputs();
@@ -88,7 +89,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void save_construct_data( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType >* obj, unsigned const version ) {
+	void save_construct_data( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType > const* obj, unsigned const version ) {
 		std::size_t numInputs = obj->getNumInputs();
 		std::size_t numOutputs = obj->getNumOutputs();
 		NNet::LayerType layerType = obj->getLayerType();
@@ -107,6 +108,7 @@ namespace boost::serialization { // begin boost::serialization
 		ar >> layerType;
 		::new( obj )NNet::BaseLayer< NumericTraitsType >( numInputs, numOutputs, layerType );
 	}
+
 } // end boost::serialization
 
 #endif // BASE_LAYER_HPP

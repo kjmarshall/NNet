@@ -7,6 +7,7 @@
 // Own includes --------------------
 #include "utils/numeric-traits.hpp"
 #include "trainable-layer.hpp"
+#include "serialization/serialize.hpp"
 
 namespace NNet { // begin NNet
 
@@ -35,6 +36,15 @@ namespace NNet { // begin NNet
 			mOutputDeltaVec( numInputs + 1 ) {
 			this -> resetWeightGradMat( );
 		}
+		explicit FullyConnectedLayer( std::size_t numInputs, std::size_t numOutputs, LayerType layerType, MatrixXType const& weightMat, MatrixXType const& weightGradMat, VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& outputDeltaVec )
+			: TrainableLayer< NumericTraitsType >( numInputs, numOutputs, layerType ),
+			mWeightMat( weightMat ),
+			mWeightGradMat( weightGradMat ),
+			mInputVec( inputVec ),
+			mOutputVec( outputVec ),
+			mOutputDeltaVec( outputDeltaVec ) {
+		}
+
 		FullyConnectedLayer( const FullyConnectedLayer &c ) = delete;
 		~FullyConnectedLayer( ) = default;
 
@@ -103,5 +113,60 @@ namespace NNet { // begin NNet
 	}; // end of class FullyConnectedLayer
 
 } // end NNet
+
+namespace boost::serialization { // begin boost::serialization
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >& obj, unsigned const version ) {
+		ar & boost::serialization::base_object< NNet::FullyConnectedLayer< NumericTraitsType >::BaseLayerType >( obj );
+		ar & obj.getWeightMat();
+		ar & obj.getWeightGradMat();
+		ar & obj.getInputVec();
+		ar & obj.getOutputVec();
+		ar & obj.getOutputDeltaVec();
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void save_construct_data( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType > const* obj, unsigned const version ) {
+		std::size_t numInputs, numOutputs;
+		NNet::LayerType layer_type;
+		numInputs = obj->getNumInputs();
+		numOutputs = obj->getNumOutputs();
+		layer_type = obj->getLayerType();
+		ar << numInputs;
+		ar << numOutputs;
+		ar << layer_type;
+
+		auto const& weightMat = obj->getWeightMat();
+		auto const& weightGradMat = obj->getWeightGradMat();
+		auto const& inputVec = obj->getInputVec();
+		auto const& outputVec = obj->getOutputVec();
+		auto const& outputDeltaVec = obj->getOutputDeltaVec();
+		ar << weightMat;
+		ar << weightGradMat;
+		ar << inputVec;
+		ar << outputVec;
+		ar << outputDeltaVec;
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void load_construct_data( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >* obj, unsigned const version ) {
+		std::size_t numInputs, numOutputs;
+		NNet::LayerType layer_type;
+		ar >> numInputs;
+		ar >> numOutputs;
+		ar >> layer_type;
+
+		typename NNet::FullyConnectedLayer< NumericTraitsType >::MatrixXType weightMat, weightGradMat;
+		typename NNet::FullyConnectedLayer< NumericTraitsType >::VectorXType inputVec, outputVec, outputDeltaVec;
+		ar >> weightMat;
+		ar >> weightGradMat;
+		ar >> inputVec;
+		ar >> outputVec;
+		ar >> outputDeltaVec;
+
+		::new( obj )NNet::FullyConnectedLayer< NumericTraitsType >( numInputs, numOutputs, layer_type, weightMat, weightGradMat, inputVec, outputVec, outputDeltaVec );
+	}
+
+} // end boost::serialization
 
 #endif // FULLY_CONNECTED_LAYER_HPP

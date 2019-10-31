@@ -11,11 +11,7 @@
 
 using namespace NNet;
 
-TEST( test, t1 ) {
-	EXPECT_EQ( 0, 0 );
-}
-
-TEST( serialization, ArchiveStreams ) {
+TEST( Serialization, ArchiveStreams ) {
 	using ArchiveOutType = boost::archive::text_oarchive;
 	std::vector< std::size_t > data(10);
 	std::iota( data.begin(), data.end(), 0 );
@@ -33,45 +29,36 @@ TEST( serialization, ArchiveStreams ) {
 	}
 }
 
-TEST( serialization, ActivationLayer ) {
+TEST( Serialization, ActivationLayer ) {
 	try {
 		// define types
-		using ArchiveOutType = boost::archive::text_oarchive;
+		using ArchiveType = boost::archive::text_oarchive;
 
 		using NumericTraitsType = NumericTraits< double >;
 		using ActFunType = IdentityActivation< NumericTraitsType >;
 		using ActLayerType = ActivationLayer< NumericTraitsType, IdentityActivation >;
+		// create an ActivationLayer
+		auto act_layer_in = std::make_shared< ActLayerType >( 10, 100 );
 		{
 		// archive out
-		SerializationArchive< ArchiveOutType > ar( "base_layer.txt" );
+		SerializationArchive< ArchiveType > ar( "base_layer.txt" );
 		ar.OpenOutArchive( );
 
-		// create an ActivationLayer
-		auto act_layer = std::make_shared< ActLayerType >( 10, 100 );
-		// ActLayerType *act_layer = new ActLayerType( 10, 100 );
-		std::cout << "NUM INPUTS: " << act_layer->getNumInputs() << std::endl;
-		std::cout << "NUM OUTPUTS: " << act_layer->getNumOutputs() << std::endl;
-
-		// ActLayerType act_layer( 10, 100 );
-		// std::cout << "NUM INPUTS: " << act_layer.getNumInputs() << std::endl;
-		// std::cout << "NUM OUTPUTS: " << act_layer.getNumOutputs() << std::endl;
-
 		// save layer
-		ar.Save( act_layer.get() );
-		std::cout << "Saving finished" << std::endl;
+		ar.Save( act_layer_in );
 		}
-
-		{
-		// archive in
-		SerializationArchive< ArchiveOutType > ar( "base_layer.txt" );
-		ar.OpenInArchive( );
 
 		// create a	ActivationLayer
-		ActLayerType *act_layer;
+		std::shared_ptr< ActLayerType > act_layer_out;
+		{
+		// archive in
+		SerializationArchive< ArchiveType > ar( "base_layer.txt" );
+		ar.OpenInArchive( );
 
 		// load layer
-		ar.Load( act_layer );
+		ar.Load( act_layer_out );
 		}
+		ASSERT_EQ( *act_layer_in, *act_layer_out );
 
 	} catch ( std::exception const& e ) {
 		std::cout << "std::exception caught: ";

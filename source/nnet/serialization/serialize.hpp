@@ -118,7 +118,7 @@ namespace NNet { // begin NNet
 		}
 
 		template< typename T >
-		void Load( T& element ) {
+		void Load( T&& element ) {
 			if ( mArchiveIn )
 				*mArchiveIn >> element;
 			else
@@ -126,7 +126,7 @@ namespace NNet { // begin NNet
 		}
 
 		template< typename T, typename... Args >
-		void Load( T& first, Args... args ) {
+		void Load( T&& first, Args&&... args ) {
 			Load( std::forward< T >( first ) );
 		    Load( std::forward< Args >( args )... );
 		}

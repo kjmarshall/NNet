@@ -7,6 +7,7 @@
 // Own includes --------------------
 #include "utils/numeric-traits.hpp"
 #include "base-layer.hpp"
+#include "serialization/serialize.hpp"
 
 namespace NNet { // begin NNet
 
@@ -49,7 +50,36 @@ namespace NNet { // begin NNet
 
 	}; // end of class TrainableLayer
 
-
 } // end NNet
+
+namespace boost::serialization { // begin boost::serialization
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::TrainableLayer< NumericTraitsType >& obj, unsigned const version ) {
+		ar & boost::serialization::base_object< NNet::BaseLayer< NumericTraitsType > >( obj );
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void save_construct_data( ArchiveType &ar, NNet::TrainableLayer< NumericTraitsType > const* obj, unsigned const version ) {
+		std::size_t numInputs = obj->getNumInputs();
+		std::size_t numOutputs = obj->getNumOutputs();
+		NNet::LayerType layerType = obj->getLayerType();
+		ar << numInputs;
+		ar << numOutputs;
+		ar << layerType;
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void load_construct_data( ArchiveType &ar, NNet::TrainableLayer< NumericTraitsType >* obj, unsigned const version ) {
+		std::size_t numInputs;
+		std::size_t numOutputs;
+		NNet::LayerType layerType;
+		ar >> numInputs;
+		ar >> numOutputs;
+		ar >> layerType;
+		::new( obj )NNet::TrainableLayer< NumericTraitsType >( numInputs, numOutputs, layerType );
+	}
+
+} // end boost::serialization
 
 #endif // TRAINABLE_LAYER_HPP
