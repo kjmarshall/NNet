@@ -34,7 +34,7 @@ namespace NNet { // begin NNet
 			std::seed_seq prng_seed ( data, data + RandomEngineType::state_size );
 			mRandGen.seed(prng_seed);
 		}
-		BaseInitializer( const BaseInitializer &c ) = delete ;
+		BaseInitializer( const BaseInitializer &c ) = default ;
 		~BaseInitializer( ) = default;
 
 		// get/set member functions

@@ -24,7 +24,7 @@ namespace NNet { // begin NNet
 		GaussInitializer( )
 			: BaseInitializer< NumericTraitsType >( ) {
 		}
-		GaussInitializer( const GaussInitializer &c ) = default;
+		GaussInitializer( GaussInitializer const& c ) = default;
 		~GaussInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t /* fanIns */, std::size_t /* fanOuts */ ) override {
@@ -58,7 +58,7 @@ namespace NNet { // begin NNet
 		GlorotInitializer( )
 			: BaseInitializer< NumericTraitsType >( ) {
 		}
-		GlorotInitializer( const GlorotInitializer &c ) = default;
+		GlorotInitializer( GlorotInitializer const& c ) = default;
 		~GlorotInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t fanIns, std::size_t fanOuts ) override {
@@ -93,7 +93,7 @@ namespace NNet { // begin NNet
 		HeInitializer( )
 			: BaseInitializer< NumericTraitsType >( ) {
 		}
-		HeInitializer( const HeInitializer &c ) = default;
+		HeInitializer( HeInitializer const& c ) = default;
 		~HeInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t fanIns, std::size_t /* fanOuts */ ) override {

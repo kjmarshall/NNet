@@ -33,7 +33,7 @@ namespace NNet { // begin NNet
 	private: 	// private typedefs
 
 	public: 	//public member functions
-		NeuralNetwork( ) = delete;
+		NeuralNetwork( ) = default;
 		explicit NeuralNetwork( InitializerType& initializer )
 			: mInitializer( initializer ) {
 		}
@@ -46,9 +46,9 @@ namespace NNet { // begin NNet
 		auto rbegin( ) { return getLayers( ).rbegin( ); }
 		auto const rbegin( ) const { return getLayers( ).rbegin( ); }
 		auto end( ) { return getLayers( ).end( ); }
-		auto const end( ) const { return getLayers.end( ); }
+		auto const end( ) const { return getLayers( ).end( ); }
 		auto rend( ) { return getLayers( ).rend( ); }
-		auto const rend( ) const { return getLayers.rend( ); }
+		auto const rend( ) const { return getLayers( ).rend( ); }
 
 		// get and set methods
 		auto& getInitializer( ) { return mInitializer; }
@@ -114,7 +114,7 @@ namespace NNet { // begin NNet
 
 	private: 	//private data members
 		std::vector< BaseLayerPtrType > mLayers;
-		InitializerType& mInitializer;
+		InitializerType mInitializer;
 	}; // end of class NeuralNetwork
 
 
