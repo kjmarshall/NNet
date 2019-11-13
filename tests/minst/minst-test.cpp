@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
 
 	// import data
 	using DataHandlerType = MINSTDataHandler< NumericTraitsType::VectorXType, NumericTraitsType::VectorXType >;
-	std::string trainingImagesPath = "/home/kmarshall/Desktop/autodesk-projects/NNet/tests/data/minst/train-images.idx3-ubyte";
-	std::string trainingLabelsPath = "/home/kmarshall/Desktop/autodesk-projects/NNet/tests/data/minst/train-labels.idx1-ubyte";
-	std::string testImagesPath = "/home/kmarshall/Desktop/autodesk-projects/NNet/tests/data/minst/t10k-images.idx3-ubyte";
-	std::string testLabelsPath = "/home/kmarshall/Desktop/autodesk-projects/NNet/tests/data/minst/t10k-labels.idx1-ubyte";
+	std::string trainingImagesPath = "../tests/data/minst/train-images.idx3-ubyte";
+	std::string trainingLabelsPath = "../tests/data/minst/train-labels.idx1-ubyte";
+	std::string testImagesPath = "../tests/data/minst/t10k-images.idx3-ubyte";
+	std::string testLabelsPath = "../tests/data/minst/t10k-labels.idx1-ubyte";
 	DataHandlerType dataHandler( trainingImagesPath, trainingLabelsPath, testImagesPath, testLabelsPath );
 	//dataHandler.printData( );
 
@@ -56,8 +56,9 @@ int main(int argc, char *argv[]) {
 
 	// create the network trainer
 	// using OptimizerType = SGDOptimizer< NetworkType >;
-	using OptimizerType = NesterovMomentumOptimizer< NetworkType >;
-	OptimizerType optimizer( nnet, 0.001 );
+	// using OptimizerType = NesterovMomentumOptimizer< NetworkType >;
+	using OptimizerType = AdaGradOptimizer< NetworkType >;
+	OptimizerType optimizer( nnet, 0.05 );
 	using NetworkTrainerType = NetworkTrainer< NetworkType, OptimizerType, CrossEntropyLossFuction, DataHandlerType >;
 	NetworkTrainerType networkTrainer( nnet, optimizer, dataHandler );
 
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]) {
 		os << "Training accuracy = " << double(correct)/double(total) * 100. << ", " << correct << "/" << total << ", Loss = " << totalLoss << std::endl;
 	};
 	for ( std::size_t i = 0; i < 20; ++i ) {
-		auto epochLoss = networkTrainer.trainEpoch( 50 );
+		auto epochLoss = networkTrainer.trainEpoch( 32 );
 		std::cout << "Epoch Loss <" << i << ">: " << epochLoss << std::endl;
 		computePrediction( std::cout, dataHandler.getTrainingData( ) );
 	}
