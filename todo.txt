@@ -8,3 +8,16 @@
 4) Time series prediction
 5) Saving and loading
 6) try catch error handeling
+
+## TODO: Goals
+* Develop training accuracy and testing accuracy outputs and plotting capabilities, confusion matrix for minst
+* Format network info printer as table
+* Finish developing network serialization, saving, and loading
+* Run more examples
+* Produce training and testing accuracy plot
+* Release first project version
+
+Extra Goals
+* Enhance with different net architectures CNNs, RBMs, etc...
+* CUDA and or parallelize
+* Qt for live display outputs

@@ -151,6 +151,21 @@ namespace NNet { // begin NNet
 			return loss;
 		}
 
+		template< typename TrainAccCB, typename TestAccCB > 
+		void trainNetwork( std::size_t num_epochs, std::size_t batch_size, TrainAccCB&& trainAccCB, TestAccCB&& testAccCB, std::ostream& out = std::cout ) {
+			// train the network
+			// we usually want to understand the following things
+			// 1) training accuracy as a function of epoch
+			// 2) testing accuracy as a function of epoch
+			// We need some type of prediction function that runs a sample through the network and then 
+			for ( std::size_t i = 0; i < num_epochs; ++i ) {
+				NumericType epoch_loss = trainEpoch( batch_size );
+				out << "Epoch < " << i << " >" << "Loss: " << epoch_loss;
+				trainAccCB( mDataHandler.getTrainingData(), out );
+				testAccCB( mDataHandler.getTestingData(), out );
+			}
+		}
+
 	private: 	//private member functions
 
 	public: 	//public data members

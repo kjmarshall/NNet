@@ -62,10 +62,7 @@ int main(int argc, char *argv[]) {
 	using NetworkTrainerType = NetworkTrainer< NetworkType, OptimizerType, CrossEntropyLossFuction, DataHandlerType >;
 	NetworkTrainerType networkTrainer( nnet, optimizer, dataHandler );
 
-	auto computePrediction = [&]( std::ostream& os, auto const& data ) {
-		std::size_t correct = 0, incorrect = 0;
-		std::size_t total = data.size( );
-		double totalLoss = 0.0;
+	auto computePrediction = [&]( auto const& data, std::size_t& correct, std::size_t& incorrect, double& totalLoss, std::ostream& os ) {
 		for ( auto const& dataPair : data ) {
 			auto const& input = dataHandler.getInput( dataPair );
 			auto const& target = dataHandler.getTarget( dataPair );
@@ -80,16 +77,35 @@ int main(int argc, char *argv[]) {
 			else
 				++incorrect;
 		}
-		os << "Training accuracy = " << double(correct)/double(total) * 100. << ", " << correct << "/" << total << ", Loss = " << totalLoss << std::endl;
 	};
-	for ( std::size_t i = 0; i < 20; ++i ) {
-		auto epochLoss = networkTrainer.trainEpoch( 32 );
-		std::cout << "Epoch Loss <" << i << ">: " << epochLoss << std::endl;
-		computePrediction( std::cout, dataHandler.getTrainingData( ) );
-	}
 
+	auto computeAccuracy = []( auto const& data, std::string const& header, std::ostream& os ) {
+		std::size_t correct = 0, incorrect = 0;
+		std::size_t total = data.size( );
+		double totalLoss = 0.0;
+		computePrediction( data, correct, incorrect, totalLoss, os );
+		os << header << " " << double(correct)/double(total) * 100. << ", " << correct << "/" << total << ", Loss = " << totalLoss << std::endl;
+		return double( correct )/ double( incorrect );
+	};
+
+	auto computeTrainingAccuracy = []( auto const& data, std::ostream& os ) {
+		std::string header = "Training accuracy =";
+		computeAccuracy( data, header, os );
+	};
+	auto computeTestingAccuracy = []( auto const& data, std::ostream& os ) {
+		std::string header = "Testing accuracy =";
+		computeAccuracy( data, header, os );
+	};
+
+	// Train the network
+	std::size_t num_epochs = 20, batch_size = 32;
+	networkTrainer.trainNetwork( num_epochs, batch_size,computeTrainingAccuracy, computeTestingAccuracy );
+
+	// Output the final prediction after training
 	// std::ofstream OFS_PREDICT( preditionFilePath );
 	// computePrediction( OFS_PREDICT, dataHandler.getTrainingData( ) );
+
+	// Serialize the network to file
 
 	return 0;
 }

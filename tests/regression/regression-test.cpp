@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 	using NetworkTrainerType = NetworkTrainer< NetworkType, OptimizerType, MSELossFuction, DataHandlerType >;
 	NetworkTrainerType networkTrainer( nnet, optimizer, dataHandler );
 
-	auto computePrediction = [&]( std::ostream& os, auto const& data ) {
+	auto computePrediction = [&]( auto const& data, std::ostream& os = std::cout ) {
 		for ( auto const& dataPair : data ) {
 			auto const& input = dataHandler.getInput( dataPair );
 			networkTrainer.computeForward( input );
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 
 	// computePrediction( std::cout, dataHandler.getTrainingData( ) );
 	std::ofstream OFS_PREDICT( predictionFilePath );
-	computePrediction( OFS_PREDICT, dataHandler.getTrainingData( ) );
+	computePrediction( dataHandler.getTrainingData( ), OFS_PREDICT );
 
 	return 0;
 }
