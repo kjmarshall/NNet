@@ -37,7 +37,7 @@ namespace NNet { // begin NNet
 		TrainableLayerVecType& getTrainableLayers( ) { return mTrainableLayers; };
 
 		// interface
-		void resetGradients( ) {
+		virtual void resetGradients( ) {
 			for ( auto& trainableLayerPtr : getTrainableLayers( ) ) {
 				trainableLayerPtr -> resetWeightGradMat( );
 			}

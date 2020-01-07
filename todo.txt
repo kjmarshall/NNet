@@ -11,10 +11,12 @@
 
 ## TODO: Goals
 * Develop training accuracy and testing accuracy outputs and plotting capabilities, confusion matrix for minst
-* Format network info printer as table
+* Format network info printer as table (possibly use fmtlib)
 * Finish developing network serialization, saving, and loading
+* Proofread docs
 * Run more examples
 * Produce training and testing accuracy plot
+* Check library files and structure
 * Release first project version
 
 Extra Goals

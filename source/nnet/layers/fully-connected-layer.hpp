@@ -18,7 +18,8 @@ namespace NNet { // begin NNet
 	class FullyConnectedLayer
 		: public TrainableLayer< NumericTraitsType > {
 	public: 	// public typedefs
-		using BaseLayerType = TrainableLayer< NumericTraitsType >;
+		using TrainableLayerType = TrainableLayer< NumericTraitsType >;
+		using BaseLayerType = typename TrainableLayerType::BaseLayerType;
 		using NumericType = typename BaseLayerType::NumericType;
 		using VectorXType = typename BaseLayerType::VectorXType;
 		using MatrixXType = typename BaseLayerType::MatrixXType;
@@ -49,6 +50,8 @@ namespace NNet { // begin NNet
 		~FullyConnectedLayer( ) = default;
 
 		// get/set member functions
+		VectorXType& getInputVec( ) { return mInputVec; }
+		VectorXType const& getInputVec( ) const { return mInputVec; }
 		VectorXType& getOutputVec( ) override { return mOutputVec; }
 		VectorXType const& getOutputVec( ) const override { return mOutputVec; }
 		void setOutputVec( VectorXType const& outputVec ) { mOutputVec = outputVec; };
@@ -102,6 +105,21 @@ namespace NNet { // begin NNet
 			mOutputDeltaVec = outputDeltaVec;
 		};
 
+		bool operator==( FullyConnectedLayer const& other ) const {
+			return ( mWeightMat == other.getWeightMat() &&
+					 mWeightGradMat == other.getWeightGradMat() &&
+					 mInputVec == other.getInputVec() &&
+					 mOutputVec == other.getOutputVec() &&
+					 mOutputDeltaVec == other.getOutputDeltaVec() );
+		}
+
+		virtual bool equalTo( BaseLayerType const& other ) const override {
+			bool equals = false;
+			if ( FullyConnectedLayer const* fco = dynamic_cast< FullyConnectedLayer const * >( &other ) ) {
+				equals = operator==( *fco );
+			}
+			return equals;
+		}
 	private: 	//private member functions
 
 	public: 	//public data members
@@ -117,7 +135,7 @@ namespace NNet { // begin NNet
 namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType >
 	void serialize( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >& obj, unsigned const version ) {
-		ar & boost::serialization::base_object< NNet::FullyConnectedLayer< NumericTraitsType >::BaseLayerType >( obj );
+		ar & boost::serialization::base_object< NNet::TrainableLayer< NumericTraitsType > >( obj );
 		ar & obj.getWeightMat();
 		ar & obj.getWeightGradMat();
 		ar & obj.getInputVec();

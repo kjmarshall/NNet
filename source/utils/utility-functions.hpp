@@ -11,12 +11,12 @@
 
 namespace NNet::Utils { // begin NNet::Utils
 
-	std::vector< std::string > split( std::string const& s, char delimiter) {
+	std::vector< std::string > split( std::string const& s, char delimiter ) {
 		std::vector<std::string> tokens;
 		std::string token;
-		std::istringstream tokenStream(s);
+		std::istringstream tokenStream( s );
 		while( std::getline( tokenStream, token, delimiter ) ) {
-			tokens.push_back(token);
+			tokens.emplace_back( token );
 		}
 		return tokens;
 	}

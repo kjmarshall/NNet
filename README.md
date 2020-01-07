@@ -1,17 +1,20 @@
-# Deep Neural Networks
-Various formulas are derived in detail in a latex document found in the docs/ directory.  Specifically, backpropagation and gradient decent are derived using Einstein index notation.
+# NNet
+The goal of the NNet project is to document the architecture and modern C++ design of a simple yet flexible deep learning framework.  NNet is a basic deep learning template library that implements different types of layer based nerual network architectures.  The library is both fast and flexible owing to its use of compile time polymorphism in layer, optimizer, and activation function design and its dynamic dispatch in network training.  The library takes advantage of modern C++17 programming techniques. Examples of the library's use are provided with sample documentation discussed below.
+
+A portion of this project has also centered around documenting rigorous derivations for various learning alorithms (e.g. back propagation).  Derivations using Einstein summation notation (ESN) are provided in a living LaTeX document (see the [docs](./docs) directory).
+
+# Contributions and Contact Information
+This project initially started because I wanted to learn about machine leanring and deep net architectures.  Outside contributions and discussions are welcome.  Feel free to contact me through my [LinkedIn](www.linkedin.com/in/kevin-j-marshall). 
 
 ## Table of Contents
 TODO: generate TOC
 
-## Introduction
-This library implements a variety of building blocks for creating different types of neural networks using modern C++17 techniques.
-
 ## Requirements
-- CMake 3.10
-- Boost 1.56, serialization
-- Eigen 3.3
-- Google Test 1.10
+- A compiler that supports C++17 (e.g. std::optional, structured bindiings)
+- CMake >= 3.10
+- Boost >= 1.56, serialization
+- Eigen >= 3.3
+- Google Test >= 1.10
 
 ## API
 Basic usage of the library is shown in examples
@@ -20,7 +23,7 @@ Basic usage of the library is shown in examples
 The following subsections describe the relevant classes roughly in the order that they would be used in a typical ML problem.
 
 ### Data Handlers
-Prior to training all nerual nets need some way to import training and testing data.  Data import is handled by a `BaseDataHandler` class templated on input data type and target data type c.f.
+Prior to training all nerual nets need some way to import training and testing data.  Data import is handled by a `BaseDataHandler` class templated on input data type and target data type
 ```c++
 template< typename InputDataType, 
           typename TargetDataType >
@@ -45,7 +48,7 @@ std::make_shared< FullyConnectedLayerType >( 30, 20, LayerType::HIDDEN );
 Fully connected layers are trainable layers, notably different from activation layers.  This distintion is used during training via dynamic dispatch i.e. downcasting to the derived class.  Fully connected layers store input, output, and weight matrix data members as well as associated gradient information.
 
 #### Activation Layers
-Activation layers take inputs and produce a non-linear (usually) output.  They are templated on numeric type and activation function type, c.f.
+Activation layers take inputs and produce a (usually) non-linear output.  They are templated on numeric type and activation function type
 ```c++
 template< typename NumericTraitsType, 
 		  template < typename > class ActFun >
@@ -132,7 +135,7 @@ template< typename NetworkType >
 class NesterovMomentumOptimizer
 	: public BaseOptimizer< NetworkType >
 ```
-Optimizers with momentum typically apply an interim update c.f.
+Optimizers with momentum typically apply an interim update
 ```c++
 void applyInterimUpdate( ) override {
 	auto v_iter = mWeightGradMatSaves.begin( );
@@ -158,7 +161,7 @@ template< typename NetworkType >
 class RMSPropOptimizer
 	: public BaseOptimizer< NetworkType >
 ```
-#### Optimizers with Momentume and Adaptive Learning Rates
+#### Optimizers with Momentum and Adaptive Learning Rates
 - RMSProp with NAG
 ```c++
 template< typename NetworkType >
@@ -196,12 +199,3 @@ NumericType trainEpoch( std::size_t batchSize )
 
 ## Model Training
 ## Serialization, Saving, and Loading
-
-## TODO: Goals
-* Develop training accuracy and testing accuracy outputs and plotting capabilities, confusion matrix for minst
-* Format network info printer as table
-* Finish developing network serialization, saving, and loading
-* Run more examples
-	* Produce training and testing accuracy plot
-* Release first project version
-* Enhance with different net architectures CNNs, RBMs, etc...

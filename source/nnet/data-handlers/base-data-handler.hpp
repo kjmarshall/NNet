@@ -26,8 +26,11 @@ namespace NNet { // begin NNet
 
 	public: 	//public member functions
 		BaseDataHandler( ) = default;
-		BaseDataHandler( const BaseDataHandler &c ) = delete;
-		~BaseDataHandler( ) = default;
+		BaseDataHandler( BaseDataHandler const &other ) = default;
+		BaseDataHandler( BaseDataHandler&& other ) = default;
+		BaseDataHandler& operator=( BaseDataHandler const& rhs ) = default;
+		BaseDataHandler& operator=( BaseDataHandler&& rhs ) = default;
+		virtual ~BaseDataHandler( ) = default;
 
 		// get/set member functions
 		VectorDataPairType& getTrainingData( ) { return mTrainingData; }
@@ -47,7 +50,7 @@ namespace NNet { // begin NNet
 				os << "#Input, Output" << std::endl;
 				for ( auto const& dataPair : data ) {
 					os << getInput( dataPair ) << " "
-					<< getTarget( dataPair ) << std::endl;
+					   << getTarget( dataPair ) << std::endl;
 				}
 			};
 			dataPrinter( getTrainingData( ), "#Training Data: size = " + std::to_string( getTrainingData( ).size( ) ) );
@@ -59,14 +62,17 @@ namespace NNet { // begin NNet
 		void shuffleRange( IterType first, IterType last, RandomEngineType&& g ) {
 			for( auto i = ( last - first ) - 1; i > 0; --i ) {
 				std::uniform_int_distribution< decltype( i ) > d( 0, i );
-				std::swap( first[i], first[ d( g ) ] );
+				auto j = d( std::forward< RandomEngineType >( g ) );
+				std::swap( first[i], first[ j ] );
 			}
 		}
 
 		// shuffle data
 		template< typename RandomEngineType >
 		void shuffleTrainingData( RandomEngineType&& g ) {
-			shuffle( getTrainingData( ).begin( ), getTrainingData( ).end( ), g );
+			shuffle( getTrainingData( ).begin( ),
+					 getTrainingData( ).end( ),
+					 std::forward< RandomEngineType >( g ) );
 		}
 
 	private: 	//private member functions

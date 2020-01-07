@@ -252,7 +252,12 @@ namespace NNet { // begin NNet
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
-			deltaOutputVec = outputVec.exp( ) + deltaInputVec;
+			auto derFun = []( auto const& output_i, auto const& deltaInput_i ) {
+				return std::exp( output_i ) + deltaInput_i;
+			};
+			std::transform( outputVec.begin( ), outputVec.end( ),
+							deltaInputVec.begin( ), deltaOutputVec.begin( ),
+							derFun );
 		}
 
 		bool operator==( LogSoftMaxActivation const& other ) const {
@@ -269,6 +274,7 @@ namespace NNet { // begin NNet
 		: public BaseLayer< NumericTraitsType > {
 	public: 	// public typedefs
 		using ActFunType = ActFun< NumericTraitsType >;
+		using ActivationLayerType = ActivationLayer< NumericTraitsType, ActFun >;
 		using BaseLayerType = BaseLayer< NumericTraitsType >;
 		using NumericType = typename BaseLayerType::NumericType;
 		using VectorXType = typename BaseLayerType::VectorXType;
@@ -276,9 +282,7 @@ namespace NNet { // begin NNet
 	private: 	// private typedefs
 
 	public: 	//public member functions
-		ActivationLayer( )
-			: BaseLayer< NumericTraitsType >( 0, 0, LayerType::ACTIVATION ), mActFun(), mInputVec( 0 ), mOutputVec( 0 ), mOutputDeltaVec( 0 ) {
-		}
+		ActivationLayer( ) = default;
 		explicit ActivationLayer( std::size_t numInputs, std::size_t numOutputs )
 			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun(), mInputVec( numInputs ), mOutputVec( numOutputs ), mOutputDeltaVec( numInputs ) {
 		}
@@ -288,7 +292,10 @@ namespace NNet { // begin NNet
 		explicit ActivationLayer( std::size_t numInputs, std::size_t numOutputs, VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& outputDeltaVec )
 			: BaseLayer< NumericTraitsType >( numInputs, numOutputs, LayerType::ACTIVATION ), mActFun(), mInputVec( inputVec ), mOutputVec( outputVec ), mOutputDeltaVec( outputDeltaVec ) {
 		}
-		ActivationLayer( const ActivationLayer &c ) = delete;
+		ActivationLayer( ActivationLayer const& other ) = default;
+		ActivationLayer( ActivationLayer&& other ) = default;
+		ActivationLayer& operator=( ActivationLayer const& rhs ) = default;
+		ActivationLayer& operator=( ActivationLayer&& rhs ) = default;
 		~ActivationLayer( ) = default;
 
 		// get/set member functions
@@ -323,11 +330,20 @@ namespace NNet { // begin NNet
 			mActFun.backwardActivate( mInputVec, mOutputVec, inputDeltaVec, mOutputDeltaVec );
 			outputDeltaVec = mOutputDeltaVec;
 		}
+
 		bool operator==( ActivationLayer const& other ) const {
 			return ( mActFun == other.getActFun() &&
 					 mInputVec == other.getInputVec() &&
 					 mOutputVec == other.getOutputVec() &&
 					 mOutputDeltaVec == other.getOutputDeltaVec() );
+		}
+
+		virtual bool equalTo( BaseLayerType const& other ) const override {
+			bool equals = false;
+			if ( ActivationLayerType const* alo = dynamic_cast< ActivationLayerType const * >( &other ) ) {
+				equals = operator==( *alo );
+			}
+			return equals;
 		}
 	private: 	//private member functions
 
@@ -345,6 +361,7 @@ namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
 	void serialize( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >& obj, unsigned const version ) {
 		ar & boost::serialization::base_object< NNet::BaseLayer< NumericTraitsType > >( obj );
+		ar & obj.getActFun();
 		ar & obj.getInputVec();
 		ar & obj.getOutputVec();
 		ar & obj.getOutputDeltaVec();

@@ -34,8 +34,11 @@ namespace NNet { // begin NNet
 			std::seed_seq prng_seed ( data, data + RandomEngineType::state_size );
 			mRandGen.seed(prng_seed);
 		}
-		BaseInitializer( const BaseInitializer &c ) = default ;
-		~BaseInitializer( ) = default;
+		BaseInitializer( BaseInitializer const& other ) = default ;
+		BaseInitializer( BaseInitializer&& other ) = default;
+		BaseInitializer& operator=( BaseInitializer const& rhs ) = default;
+		BaseInitializer& operator=( BaseInitializer&& rhs ) = default;
+		virtual ~BaseInitializer( ) = default;
 
 		// get/set member functions
 		RandomEngineType& getRandomEngine( ) { return mRandGen; }
@@ -75,5 +78,11 @@ namespace NNet { // begin NNet
 	}; // end of class BaseInitializer
 
 } // end NNet
+
+namespace boost::serialization { // begin boost::serialization
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::BaseInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	}
+} // end boost::serialization
 
 #endif // BASE_INITIALIZER_HPP

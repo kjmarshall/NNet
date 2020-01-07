@@ -24,7 +24,10 @@ namespace NNet { // begin NNet
 
 	public: 	//public member functions
 		RegressionDataHandler( ) = default;
-		RegressionDataHandler( const RegressionDataHandler &c ) = delete;
+		RegressionDataHandler( const RegressionDataHandler &c ) = default;
+		RegressionDataHandler( RegressionDataHandler&& other ) = default;
+		RegressionDataHandler& operator=( RegressionDataHandler& rhs ) = default;
+		RegressionDataHandler& operator=( RegressionDataHandler&& rhs ) = default;
 		~RegressionDataHandler( ) = default;
 
 		// interface functions
@@ -114,7 +117,10 @@ namespace NNet { // begin NNet
 				testingData.emplace_back( std::make_pair( image, label ) );
 			}
 		}
-		MINSTDataHandler(const MINSTDataHandler &c) = delete;
+		MINSTDataHandler( MINSTDataHandler const& other ) = default;
+		MINSTDataHandler( MINSTDataHandler&& other ) = default;
+		MINSTDataHandler& operator=( MINSTDataHandler const& rhs ) = default;
+		MINSTDataHandler& operator=( MINSTDataHandler&& rhs ) = default;
 		~MINSTDataHandler( ) = default;
 
 	private: 	//private member functions

@@ -17,6 +17,8 @@ namespace NNet { // begin NNet
 		: public BaseOptimizer< NetworkType > {
 	public: 	// public typedefs
 		using NumericType = typename NetworkType::NumericType;
+		using VectorXType = typename NetworkType::VectorXType;
+		using MatrixXType = typename NetworkType::MatrixXType;
 
 	private: 	// private typedefs
 
@@ -25,7 +27,7 @@ namespace NNet { // begin NNet
 		explicit SGDOptimizer( NetworkType& network, NumericType learningRate = 0.001 )
 			: BaseOptimizer< NetworkType >( network ), mLearningRate( learningRate ) {
 		}
-		SGDOptimizer( const SGDOptimizer &c ) = delete;
+		SGDOptimizer( SGDOptimizer const& other ) = delete;
 		~SGDOptimizer( ) = default;
 
 		//get/set member functions
@@ -34,8 +36,8 @@ namespace NNet { // begin NNet
 		// interface
 		void applyWeightUpdate( std::size_t batchSize ) override {
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				auto const& weightGradMat = layerPtr -> getWeightGradMat( );
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				MatrixXType const& weightGradMat = layerPtr -> getWeightGradMat( );
 				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
 				// std::cout << "LearningRate, coeff: " << mLearningRate << ", " << coeff << std::endl;
 				// std::cout << "WeightMat Before: " << weightMat.rows( ) << ", " << weightMat.cols( ) << std::endl
@@ -72,7 +74,7 @@ namespace NNet { // begin NNet
 		explicit MomentumOptimizer( NetworkType& network, NumericType learningRate = 0.001, NumericType momentum = 0.9 )
 			: BaseOptimizer< NetworkType >( network ), mLearningRate( learningRate ), mMomentum( momentum ) {
 			for ( auto const& layer : this -> getTrainableLayers( ) ) {
-				auto const& weightGradMat = layer -> getWeightGradMat( );
+				MatrixXType const& weightGradMat = layer -> getWeightGradMat( );
 				auto numRows = weightGradMat.rows( );
 				auto numCols = weightGradMat.cols( );
 				MatrixXType mat( numRows, numCols );
@@ -80,7 +82,7 @@ namespace NNet { // begin NNet
 				mWeightGradMatSaves.emplace_back( mat );
 			}
 		}
-		MomentumOptimizer( const MomentumOptimizer &c ) = delete;
+		MomentumOptimizer( MomentumOptimizer const& other ) = delete;
 		~MomentumOptimizer( ) = default;
 
 		//get/set member functions
@@ -93,12 +95,14 @@ namespace NNet { // begin NNet
 		void applyWeightUpdate( std::size_t batchSize ) override {
 			auto v_iter = mWeightGradMatSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				auto const& weightGradMat = layerPtr -> getWeightGradMat( );
-				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
-				auto v = mMomentum * (*v_iter) + mLearningRate * coeff * weightGradMat;
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				MatrixXType const& weightGradMat = layerPtr -> getWeightGradMat( );
+				NumericType coeff = 1.0 / static_cast< NumericType >( batchSize );
+				// compute the velocity v_{t+1} at time t+1
+				// note that v_iter at t = 0 is zero
+				MatrixXType v = mMomentum * (*v_iter) - mLearningRate * coeff * weightGradMat;
 				*v_iter = v;
-				weightMat = weightMat - v;
+				weightMat = weightMat + v;
 				++v_iter;
 			}
 		}
@@ -129,7 +133,7 @@ namespace NNet { // begin NNet
 		explicit NesterovMomentumOptimizer( NetworkType& network, NumericType learningRate = 0.001, NumericType momentum = 0.9 )
 			: BaseOptimizer< NetworkType >( network ), mLearningRate( learningRate ), mMomentum( momentum ) {
 			for ( auto const& layer : this -> getTrainableLayers( ) ) {
-				auto const& weightGradMat = layer -> getWeightGradMat( );
+				MatrixXType const& weightGradMat = layer -> getWeightGradMat( );
 				auto numRows = weightGradMat.rows( );
 				auto numCols = weightGradMat.cols( );
 				MatrixXType mat( numRows, numCols );
@@ -137,7 +141,7 @@ namespace NNet { // begin NNet
 				mWeightGradMatSaves.emplace_back( mat );
 			}
 		}
-		NesterovMomentumOptimizer( const NesterovMomentumOptimizer &c ) = delete;
+		NesterovMomentumOptimizer( NesterovMomentumOptimizer const& other ) = delete;
 		~NesterovMomentumOptimizer( ) = default;
 
 		//get/set member functions
@@ -150,20 +154,20 @@ namespace NNet { // begin NNet
 		void applyInterimUpdate( ) override {
 			auto v_iter = mWeightGradMatSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				weightMat = weightMat - mMomentum * ( *v_iter );
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				weightMat = weightMat + mMomentum * ( *v_iter );
 				++v_iter;
 			}
 		}
 		void applyWeightUpdate( std::size_t batchSize ) override {
 			auto v_iter = mWeightGradMatSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				auto const& weightGradMat = layerPtr -> getWeightGradMat( );
-				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
-				auto v = mMomentum * (*v_iter) + mLearningRate * coeff * weightGradMat;
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				MatrixXType const& weightGradMat = layerPtr -> getWeightGradMat( );
+				NumericType coeff = 1.0 / static_cast< NumericType >( batchSize );
+				MatrixXType v = mMomentum * (*v_iter) - mLearningRate * coeff * weightGradMat;
 				*v_iter = v;
-				weightMat = weightMat - v;
+				weightMat = weightMat - mLearningRate * coeff * weightGradMat;
 				++v_iter;
 			}
 		}
@@ -190,11 +194,11 @@ namespace NNet { // begin NNet
 	private: 	// private typedefs
 
 	public: 	//public member functions
-		AdaGradOptimizer() = default;
-		explicit AdaGradOptimizer( NetworkType& network, NumericType learningRate = 0.001 )
+		AdaGradOptimizer() = delete;
+		explicit AdaGradOptimizer( NetworkType& network, NumericType learningRate = 0.01 )
 			: BaseOptimizer< NetworkType >( network ), mLearningRate( learningRate ) {
 			for ( auto const& layer : this -> getTrainableLayers( ) ) {
-				auto const& weightGradMat = layer -> getWeightGradMat( );
+				MatrixXType const& weightGradMat = layer -> getWeightGradMat( );
 				auto numRows = weightGradMat.rows( );
 				auto numCols = weightGradMat.cols( );
 				MatrixXType mat( numRows, numCols );
@@ -213,13 +217,13 @@ namespace NNet { // begin NNet
 		void applyWeightUpdate( std::size_t batchSize ) override {
 			auto r_iter = mGradMatAccumSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				auto const& weightGradMat = layerPtr -> getWeightGradMat( );
-				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				MatrixXType const& weightGradMat = layerPtr -> getWeightGradMat( );
+				NumericType coeff = 1.0 / static_cast< NumericType >( batchSize );
 				// accumulate squared gradient
-				auto grad_sq = coeff * coeff * weightGradMat.cwiseProduct( weightGradMat );
+				MatrixXType grad_sq = coeff * coeff * weightGradMat.cwiseProduct( weightGradMat );
 				*r_iter = (*r_iter) + grad_sq;
-				auto r = *r_iter;
+				MatrixXType r = *r_iter;
 				r = r.unaryExpr( [this]( auto const& ele ) {
 					return ( mLearningRate / ( 1.0e-7 + std::sqrt( ele ) ) );
 				} );
@@ -251,11 +255,11 @@ namespace NNet { // begin NNet
 	private: 	// private typedefs
 
 	public: 	//public member functions
-		RMSPropOptimizer() = default;
+		RMSPropOptimizer() = delete;
 		explicit RMSPropOptimizer( NetworkType& network, NumericType learningRate = 0.001, NumericType decayRate = 0.9 )
 			: BaseOptimizer< NetworkType >( network ), mLearningRate( learningRate ), mDecayRate( decayRate ) {
 			for ( auto const& layer : this -> getTrainableLayers( ) ) {
-				auto const& weightGradMat = layer -> getWeightGradMat( );
+				MatrixXType const& weightGradMat = layer -> getWeightGradMat( );
 				auto numRows = weightGradMat.rows( );
 				auto numCols = weightGradMat.cols( );
 				MatrixXType mat( numRows, numCols );
@@ -263,7 +267,7 @@ namespace NNet { // begin NNet
 				mGradMatAccumSaves.emplace_back( mat );
 			}
 		}
-		RMSPropOptimizer(const RMSPropOptimizer &c) = delete;
+		RMSPropOptimizer( RMSPropOptimizer const& other ) = delete;
 		~RMSPropOptimizer() = default;
 
 		//get/set member functions
@@ -276,15 +280,15 @@ namespace NNet { // begin NNet
 		void applyWeightUpdate( std::size_t batchSize ) override {
 			auto r_iter = mGradMatAccumSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				auto const& weightGradMat = layerPtr -> getWeightGradMat( );
-				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				MatrixXType const& weightGradMat = layerPtr -> getWeightGradMat( );
+				NumericType coeff = 1.0 / static_cast< NumericType >( batchSize );
 				// accumulate squared gradient
-				auto grad_sq = coeff * coeff * weightGradMat.cwiseProduct( weightGradMat );
+				MatrixXType grad_sq = coeff * coeff * weightGradMat.cwiseProduct( weightGradMat );
 				*r_iter = mDecayRate * (*r_iter) + (1.0 - mDecayRate ) * grad_sq;
-				auto r = *r_iter;
+				MatrixXType r = *r_iter;
 				r = r.unaryExpr( [this]( auto const& ele ) {
-					return ( mLearningRate / ( 1.0e-7 + std::sqrt( ele ) ) );
+					return ( mLearningRate / ( 1.0e-6 + std::sqrt( ele ) ) );
 				} );
 				weightMat = weightMat - r.cwiseProduct( coeff * weightGradMat );
 				++r_iter;
@@ -314,11 +318,11 @@ namespace NNet { // begin NNet
 	private: 	// private typedefs
 
 	public: 	//public member functions
-		RMSPropNestMomOptimizer() = default;
+		RMSPropNestMomOptimizer() = delete;
 		explicit RMSPropNestMomOptimizer( NetworkType& network, NumericType learningRate = 0.001, NumericType momentum = 0.9, NumericType decayRate = 0.9 )
 			: BaseOptimizer< NetworkType >( network ), mLearningRate( learningRate ), mMomentum( momentum ), mDecayRate( decayRate ) {
 			for ( auto const& layer : this -> getTrainableLayers( ) ) {
-				auto const& weightGradMat = layer -> getWeightGradMat( );
+				MatrixXType const& weightGradMat = layer -> getWeightGradMat( );
 				auto numRows = weightGradMat.rows( );
 				auto numCols = weightGradMat.cols( );
 				MatrixXType mat( numRows, numCols );
@@ -327,7 +331,7 @@ namespace NNet { // begin NNet
 				mGradMatAccumSaves.emplace_back( mat );
 			}
 		}
-		RMSPropNestMomOptimizer(const RMSPropNestMomOptimizer &c) = delete;
+		RMSPropNestMomOptimizer( RMSPropNestMomOptimizer const& other ) = delete;
 		~RMSPropNestMomOptimizer() = default;
 
 		//get/set member functions
@@ -342,8 +346,8 @@ namespace NNet { // begin NNet
 		void applyInterimUpdate( ) override {
 			auto v_iter = mWeightGradMatSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				weightMat = weightMat - mMomentum * ( *v_iter );
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				weightMat = weightMat + mMomentum * ( *v_iter );
 				++v_iter;
 			}
 		}
@@ -351,19 +355,19 @@ namespace NNet { // begin NNet
 			auto v_iter = mWeightGradMatSaves.begin( );
 			auto r_iter = mGradMatAccumSaves.begin( );
 			for ( auto& layerPtr : this -> getTrainableLayers( ) ) {
-				auto& weightMat = layerPtr -> getWeightMat( );
-				auto const& weightGradMat = layerPtr -> getWeightGradMat( );
-				auto coeff = 1.0 / static_cast< NumericType >( batchSize );
+				MatrixXType& weightMat = layerPtr -> getWeightMat( );
+				MatrixXType const& weightGradMat = layerPtr -> getWeightGradMat( );
+				NumericType coeff = 1.0 / static_cast< NumericType >( batchSize );
 				// accumulate squared gradient
-				auto grad_sq = coeff * coeff * weightGradMat.cwiseProduct( weightGradMat );
+				MatrixXType grad_sq = coeff * coeff * weightGradMat.cwiseProduct( weightGradMat );
 				*r_iter = mDecayRate * (*r_iter) + (1.0 - mDecayRate ) * grad_sq;
-				auto r = *r_iter;
+				MatrixXType r = *r_iter;
 				r = r.unaryExpr( [this]( auto const& ele ) {
 					return ( mLearningRate / ( 1.0e-7 + std::sqrt( ele ) ) );
 				} );
-				auto v = mMomentum * (*v_iter) + r.cwiseProduct( coeff * weightGradMat );
+				MatrixXType v = mMomentum * ( *v_iter ) - r.cwiseProduct( coeff * weightGradMat );
 				*v_iter = v;
-				weightMat = weightMat - v;
+				weightMat = weightMat - r.cwiseProduct( coeff * weightGradMat );
 				++v_iter;
 				++r_iter;
 			}

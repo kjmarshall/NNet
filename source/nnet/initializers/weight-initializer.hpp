@@ -24,7 +24,10 @@ namespace NNet { // begin NNet
 		GaussInitializer( )
 			: BaseInitializer< NumericTraitsType >( ) {
 		}
-		GaussInitializer( GaussInitializer const& c ) = default;
+		GaussInitializer( GaussInitializer const& other ) = default;
+		GaussInitializer( GaussInitializer&& other ) = default;
+		GaussInitializer& operator=( GaussInitializer const& rhs ) = default;
+		GaussInitializer& operator=( GaussInitializer&& rhs ) = default;
 		~GaussInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t /* fanIns */, std::size_t /* fanOuts */ ) override {
@@ -58,7 +61,10 @@ namespace NNet { // begin NNet
 		GlorotInitializer( )
 			: BaseInitializer< NumericTraitsType >( ) {
 		}
-		GlorotInitializer( GlorotInitializer const& c ) = default;
+		GlorotInitializer( GlorotInitializer const& other ) = default;
+		GlorotInitializer( GlorotInitializer&& other ) = default;
+		GlorotInitializer& operator=( GlorotInitializer const& rhs ) = default;
+		GlorotInitializer& operator=( GlorotInitializer&& rhs ) = default;
 		~GlorotInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t fanIns, std::size_t fanOuts ) override {
@@ -94,6 +100,9 @@ namespace NNet { // begin NNet
 			: BaseInitializer< NumericTraitsType >( ) {
 		}
 		HeInitializer( HeInitializer const& c ) = default;
+		HeInitializer( HeInitializer&& other ) = default;
+		HeInitializer& operator=( HeInitializer const& rhs ) = default;
+		HeInitializer& operator=( HeInitializer&& rhs ) = default;
 		~HeInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t fanIns, std::size_t /* fanOuts */ ) override {
@@ -111,5 +120,19 @@ namespace NNet { // begin NNet
 	}; // end of class HeInitializer
 
 } // end NNet
+
+namespace boost::serialization { // begin boost::serialization
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::GaussInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::GlorotInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	}
+
+	template< typename ArchiveType, typename NumericTraitsType >
+	void serialize( ArchiveType &ar, NNet::HeInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	}
+} // end boost::serialization
 
 #endif // WEIGHT_INITIALIZER_HPP

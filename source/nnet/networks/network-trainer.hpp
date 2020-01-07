@@ -1,8 +1,12 @@
 #ifndef NETWORK_TRAINER_HPP
 #define NETWORK_TRAINER_HPP
 
+// System includes --------------------
+#include <filesystem>
+
 // Own includes --------------------
 #include "loss/loss-function.hpp"
+#include "utils/progress-bar.hpp"
 
 namespace NNet { // begin NNet
 
@@ -63,6 +67,8 @@ namespace NNet { // begin NNet
 			auto gradLoss = getLossFun( ).gradLoss( outputVec, targetVec );
 			return std::make_pair( loss, gradLoss );
 		}
+
+		// compute backward
 		void computeBackward( VectorXType const& gradLoss ) {
 			// run backward compute
 			VectorXType dummyVec;
@@ -80,6 +86,14 @@ namespace NNet { // begin NNet
 				inputDeltaWorkVec = outputDeltaWorkVec;
 			}
 		}
+
+		//compute single prediction
+		auto computePrediction( VectorXType const& inputVec ) {
+			computeForward( inputVec );
+			auto const& lastOutput = getNetwork( ).getLastOutput( );
+			return lastOutput;
+		}
+
 		NumericType runSingleSample( VectorXType const& inputVec,
 									 VectorXType const& targetVec ) {
 			computeForward( inputVec );
@@ -105,14 +119,16 @@ namespace NNet { // begin NNet
 
 		NumericType trainEpoch( std::size_t batchSize ) {
 			NumericType epochLoss = 0.0;
-			std::size_t batchCtr = 0;
+			std::size_t batchCtr = 1;
 			std::size_t sampleCtr = 0;
 			mDataHandler.shuffleTrainingData( getNetwork( ).getInitializer( ).getRandomEngine( ) );
 			auto& data = mDataHandler.getTrainingData( );
-			getOptimizer( ).applyInterimUpdate( );
-
+			std::size_t num_batchs = data.size() / batchSize;
+			Utils::ProgressBar progress_bar( data.size() / batchSize, "" );
 			for_each_batch( data.begin( ), data.end( ), batchSize,
 							[&,this]( auto& iterFrom, auto& iterTo ) {
+								progress_bar.updateLastPrintedMessage( "Training on batch " + std::to_string( batchCtr ) + "/" + std::to_string( num_batchs ) );
+								getOptimizer( ).applyInterimUpdate( );
 								NumericType batchLoss = 0.0;
 								std::size_t realBatchSize = 0;
 								for ( auto& iter = iterFrom; iter < iterTo; ++iter ) {
@@ -133,7 +149,8 @@ namespace NNet { // begin NNet
 								// reset gradients
 								getOptimizer( ).resetGradients( );
 
-								batchCtr++;
+								++batchCtr;
+								++progress_bar;
 							} );
 			epochLoss /= static_cast< NumericType >( batchCtr );
 			return epochLoss;
@@ -151,18 +168,57 @@ namespace NNet { // begin NNet
 			return loss;
 		}
 
-		template< typename TrainAccCB, typename TestAccCB > 
-		void trainNetwork( std::size_t num_epochs, std::size_t batch_size, TrainAccCB&& trainAccCB, TestAccCB&& testAccCB, std::ostream& out = std::cout ) {
-			// train the network
-			// we usually want to understand the following things
-			// 1) training accuracy as a function of epoch
-			// 2) testing accuracy as a function of epoch
-			// We need some type of prediction function that runs a sample through the network and then 
-			for ( std::size_t i = 0; i < num_epochs; ++i ) {
-				NumericType epoch_loss = trainEpoch( batch_size );
-				out << "Epoch < " << i << " >" << "Loss: " << epoch_loss;
-				trainAccCB( mDataHandler.getTrainingData(), out );
-				testAccCB( mDataHandler.getTestingData(), out );
+		bool saveNetwork( std::string const& file_path ) {
+			auto path = std::filesystem::path( file_path );
+			std::string ext = path.extension().string();
+			if ( ext == ".txt" ) {
+				using ArchiveOutType = boost::archive::text_oarchive;
+				SerializationArchive< ArchiveOutType > ar( file_path );
+				ar.OpenOutArchive();
+				ar.Save( getNetwork() );
+				return true;
+			}
+			else if ( ext == ".bin" ) {
+				using ArchiveOutType = boost::archive::binary_oarchive;
+				SerializationArchive< ArchiveOutType > ar( file_path );
+				ar.OpenOutArchive();
+				ar.Save( getNetwork() );
+				return true;
+			}
+			else if ( ext == ".xml" ) {
+				std::cout << "Saving to xml format is not supported." << std::endl;
+				return false;
+			}
+			else {
+				std::cout << "Unrecognized file extension." << std::endl;
+				return false;
+			}
+		}
+
+		bool loadNetwork( std::string const& file_path ) {
+			auto path = std::filesystem::path( file_path );
+			std::string ext = path.extension().string();
+			if ( ext == ".txt" ) {
+				using ArchiveOutType = boost::archive::text_oarchive;
+				SerializationArchive< ArchiveOutType > ar( file_path );
+				ar.OpenInArchive();
+				ar.Load( getNetwork() );
+				return true;
+			}
+			else if ( ext == ".bin" ) {
+				using ArchiveOutType = boost::archive::binary_oarchive;
+				SerializationArchive< ArchiveOutType > ar( file_path );
+				ar.OpenInArchive();
+				ar.Load( getNetwork() );
+				return true;
+			}
+			else if ( ext == ".xml" ) {
+				std::cout << "Saving to xml format is not supported." << std::endl;
+				return false;
+			}
+			else {
+				std::cout << "Unrecognized file extension." << std::endl;
+				return false;
 			}
 		}
 

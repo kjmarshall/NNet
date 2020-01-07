@@ -37,7 +37,7 @@ namespace NNet { // begin NNet
 		explicit NeuralNetwork( InitializerType& initializer )
 			: mInitializer( initializer ) {
 		}
-		NeuralNetwork( NeuralNetwork const& c ) = delete;
+		NeuralNetwork( NeuralNetwork const& other ) = delete;
 		~NeuralNetwork( ) = default;
 
 		// begin/ end iterators for range based loops
@@ -108,6 +108,18 @@ namespace NNet { // begin NNet
 			}
 		}
 
+		bool operator==( NeuralNetwork const& other ) const {
+			bool equal = true;
+			if ( getNumLayers() != other.getNumLayers() )
+				return false;
+			for ( std::size_t i = 0; i < getNumLayers(); ++i ) {
+				auto const& layer = getLayer( i );
+				auto const& other_layer = other.getLayer( i );
+				equal = equal && ( *layer == *other_layer );
+			}
+			return equal;
+		}
+
 	private: 	//private member functions
 
 	public: 	//public data members
@@ -119,5 +131,28 @@ namespace NNet { // begin NNet
 
 
 } // end NNet
+
+namespace boost::serialization { // begin boost::serialization
+	template< typename ArchiveType, typename NumericTraitsType, typename InitializerType >
+	void serialize( ArchiveType &ar, NNet::NeuralNetwork< NumericTraitsType, InitializerType > &obj, unsigned const version ) {
+		// register all layer types...
+		// register fc layer
+		ar.template register_type< NNet::FullyConnectedLayer< NumericTraitsType > >();
+		// register all possible activation layers
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::IdentityActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::LogisticActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::TanHActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::ArcTanActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::ReLUActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::PReLUActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::ELUActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::SoftMaxActivation > >();
+		ar.template register_type< NNet::ActivationLayer< NumericTraitsType, NNet::LogSoftMaxActivation > >();
+
+		// serialize the network
+		ar & obj.getLayers();
+		ar & obj.getInitializer();
+	}
+} // end boost::serialization
 
 #endif // NNET_HPP

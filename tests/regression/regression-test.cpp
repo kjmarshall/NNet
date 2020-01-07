@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
 	// std::stringstream ss;
 	// std::size_t predCtr = 0;
-	for ( std::size_t i = 0; i < 1000; ++i ) {
+	for ( std::size_t i = 0; i < 100; ++i ) {
 		// if ( predCtr % 10 == 0 ) {
 		// 	ss << "../tests/data/evo/pred_"  << predCtr << ".data";
 		// 	std::ofstream OFS( ss.str( ).c_str( ) );
@@ -90,6 +90,8 @@ int main(int argc, char *argv[]) {
 	// computePrediction( std::cout, dataHandler.getTrainingData( ) );
 	std::ofstream OFS_PREDICT( predictionFilePath );
 	computePrediction( dataHandler.getTrainingData( ), OFS_PREDICT );
+
+	networkTrainer.saveNetwork( "network_ser.txt" );
 
 	return 0;
 }

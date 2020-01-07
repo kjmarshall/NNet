@@ -15,5 +15,5 @@ sdk_list_source_files(SOURCE_FILES)
 ## ---------- ##
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 sdk_setup_project_bin(${PROJECT_NAME})
-add_dependencies(${PROJECT_NAME} nnet )
-target_link_libraries(${PROJECT_NAME} LINK_INTERFACE_LIBRARIES nnet ${LIBS} ${EXTRA_LIBS})
+add_dependencies(${PROJECT_NAME} utils nnet )
+target_link_libraries(${PROJECT_NAME} PUBLIC utils INTERFACE nnet PUBLIC ${LIBS} PUBLIC ${EXTRA_LIBS})
