@@ -306,38 +306,6 @@ For hidden layers $l_{k}$, $0 \le k < K$, the calculation becomes,
   \end{split}
 \end{equation}
 
-\section{Layer Based Architecture}
-\label{sec:layer-arch}
-The neural network architecture described above has grouped activation
-functions in with network processing layers.  Insight into the back
-propagation algorithm may be obtained by separating these layer
-computations.
-
-The output layer takes $y$
-
-\section{Things to do...}
-\label{sec:things-to-do}
-\begin{itemize}
-\item Need some way to get data in.  If using MINST we need to
-  research how to import $28 \times 28 = 756$ pixels.
-\item Design API to connect layers.  If we assume layers are fully
-  connected we have to initialize layers from left to right or right
-  to left.  For example, $756$ inputs may funnel into hidden layer
-  $l_0$ which could have $100$ neurons.  The weight matrix would then
-  be $756 \times 100$ which is the same as $\#inputs \times n_{0}$.
-  The second hidden layer could then have $50$ neurons leading to a
-  weight matrix $\vect{W}^{1}$ of dimensions $(n_{0}+1) \times n_{1}$.
-  Each weight matrix $\vect{W}^{k}$ would have dimensions $(n_{k-1}+1)
-  \times n_{k}$ with an output vector, $\vect{o}^{k}$ of dimension
-  $n_{k}$.
-\item Need to understand learning algorithm.  Run feed forward on a
-  batch set of training examples then back propagate error.
-
-\item Test on MINST, then get threading/CUDA working...
-\end{itemize}
-
-
-
 \end{document}
 
 
