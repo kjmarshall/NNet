@@ -5,62 +5,51 @@
 #include <string>
 
 namespace NNet::Utils { // begin NNet::Utils
-   /**
-    * ProgressBar.
-    */
+	/**
+	 *ProgressBar is a RAII class that implements console indicators/graphics
+	 *for monitoring the progress during exection of a loop.
+	 */
 	class ProgressBar {
-	public:
-		/**
-		 * Constructor.
-		 * It takes two values: the expected number of iterations whose progress we
-		 * want to monitor and an initial message to be displayed on top of the bar
-		 * (which can be updated with updateLastPrintedMessage()).
-		 */
-		ProgressBar( uint32_t expectedIterations, std::string const& initialMessage = "" );
+	public: 	// public typedefs
 
-		/**
-		 * Destructor to guarantee RAII.
-		 */
+	private: 	// private typedefs
+
+	public: 	//public member functions
+		ProgressBar() = default;
+		explicit ProgressBar( unsigned int numIterations, std::string const& initialMessage = "" );
+
+		// Explicitly make non copyable and non moveable even though the
+		// move constructor and move assignment would not be generated
+		ProgressBar( ProgressBar const& other ) = delete;
+		ProgressBar( ProgressBar && other ) = delete;
+		ProgressBar& operator=( ProgressBar const& rhs ) = delete;
+		ProgressBar& operator=( ProgressBar&& rhs ) = delete;
 		~ProgressBar();
 
-		// Make the object non-copyable
-		ProgressBar( ProgressBar const& o ) = delete;
-		ProgressBar& operator=( ProgressBar const& o ) = delete;
-
-		/**
-		 * Must be invoked when the progress bar is no longer needed to restore the
-		 * position of the cursor to the end of the output.
-		 * It is automatically invoked when the object is destroyed.
-		 */
+		/// Restores the positoin of the cursor to the end of the output
+		/// Invoked when the on destruction.
 		void endProgressBar();
 
-		/**
-		 * Prints a new message under the last printed message, without overwriting
-		 * it. This moves the progress bar down to be placed under the newly
-		 * written message.
-		 */
+		/// Print new message
 		void printNewMessage( std::string const& message );
 
-		/**
-		 * Prints a message while the progress bar is on the screen on top on the
-		 * last printed message. Since the cursor is right at the beginning of the
-		 * progress bar, it moves the cursor up by one line before printing, and
-		 * then returns it to its original position.
-		 */
+		/// Print a message on top of the last printed message
 		void updateLastPrintedMessage( std::string const& message );
 
-		/**
-		 * Overloaded prefix operator, used to indicate that the has been a new
-		 * iteration.
-		 */
+		/// Overloaded prefix operator, indicates new iteration
 		void operator++();
 
-	private:
+	private: 	//private member functions
+
+	public: 	//public data members
+
+	private: 	//private data members
 		unsigned int mTotalIterations;
 		unsigned int mNumberOfTicks;
 		bool mEnded;
 		size_t mLengthOfLastPrintedMessage;
-	};
+	}; // end of class ProgressBar
+
 } // end NNet::Utils
 
 #endif // PROGRESS_BAR_HPP

@@ -81,7 +81,7 @@ namespace NNet { // begin NNet
 
 namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::BaseInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	void serialize( ArchiveType &ar, NNet::BaseInitializer< NumericTraitsType > &obj, unsigned const /* version */ ) {
 	}
 } // end boost::serialization
 

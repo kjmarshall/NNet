@@ -134,7 +134,7 @@ namespace NNet { // begin NNet
 
 namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType, typename InitializerType >
-	void serialize( ArchiveType &ar, NNet::NeuralNetwork< NumericTraitsType, InitializerType > &obj, unsigned const version ) {
+	void serialize( ArchiveType &ar, NNet::NeuralNetwork< NumericTraitsType, InitializerType > &obj, unsigned const /* version */ ) {
 		// register all layer types...
 		// register fc layer
 		ar.template register_type< NNet::FullyConnectedLayer< NumericTraitsType > >();

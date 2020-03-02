@@ -31,7 +31,7 @@ namespace NNet { // begin NNet
 		~GaussInitializer( ) = default;
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t /* fanIns */, std::size_t /* fanOuts */ ) override {
-			weightMat = weightMat.unaryExpr( [this]( auto const& dummy ) {
+			weightMat = weightMat.unaryExpr( [this]( auto const& /* dummy */ ) {
 					return this -> randNormal( );
 				} );
 		}
@@ -69,7 +69,7 @@ namespace NNet { // begin NNet
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t fanIns, std::size_t fanOuts ) override {
 			NumericType stdDev = 2.0 / ( fanIns + fanOuts );
-			weightMat = weightMat.unaryExpr( [&,this]( auto const& dummy ) {
+			weightMat = weightMat.unaryExpr( [&,this]( auto const& /* dummy */ ) {
 					return this -> randNormal( 0.0, stdDev );
 				} );
 		}
@@ -107,7 +107,7 @@ namespace NNet { // begin NNet
 
 		void initWeightMat( MatrixXType& weightMat, std::size_t fanIns, std::size_t /* fanOuts */ ) override {
 			NumericType stdDev = 2.0 / ( fanIns );
-			weightMat = weightMat.unaryExpr( [&,this]( auto const& dummy ) {
+			weightMat = weightMat.unaryExpr( [&,this]( auto const& /* dummy */ ) {
 					return this -> randNormal( 0.0, stdDev );
 				} );
 		}
@@ -123,15 +123,15 @@ namespace NNet { // begin NNet
 
 namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::GaussInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::GaussInitializer< NumericTraitsType > & /* obj */, unsigned const /* version */ ) {
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::GlorotInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::GlorotInitializer< NumericTraitsType > & /* obj */, unsigned const /* version */ ) {
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::HeInitializer< NumericTraitsType > &obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::HeInitializer< NumericTraitsType > & /*  obj */, unsigned const /* version */ ) {
 	}
 } // end boost::serialization
 

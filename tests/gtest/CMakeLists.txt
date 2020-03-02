@@ -1,7 +1,7 @@
 ## ---------------------- ##
 ## Project: various tests ##
 ## ---------------------- ##
-project( google-tests )
+project( run-tests )
 message(STATUS "PROCESSING ${PROJECT_NAME}")
 
 ## -------- ##

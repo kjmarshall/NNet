@@ -123,8 +123,8 @@ namespace NNet { // begin NNet
 			std::size_t sampleCtr = 0;
 			mDataHandler.shuffleTrainingData( getNetwork( ).getInitializer( ).getRandomEngine( ) );
 			auto& data = mDataHandler.getTrainingData( );
-			std::size_t num_batchs = data.size() / batchSize;
-			Utils::ProgressBar progress_bar( data.size() / batchSize, "" );
+			std::size_t num_batchs = data.size() / batchSize + 1;
+			Utils::ProgressBar progress_bar( num_batchs, "" );
 			for_each_batch( data.begin( ), data.end( ), batchSize,
 							[&,this]( auto& iterFrom, auto& iterTo ) {
 								progress_bar.updateLastPrintedMessage( "Training on batch " + std::to_string( batchCtr ) + "/" + std::to_string( num_batchs ) );

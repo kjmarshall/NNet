@@ -93,12 +93,12 @@ namespace NNet { // begin NNet
 namespace boost::serialization { // begin boost::serialization
 	// Serialization for the NNet::LayerType enumerator
 	template< typename ArchiveType >
-	void serialize( ArchiveType &ar, NNet::LayerType &obj, unsigned const version ) {
+	void serialize( ArchiveType &ar, NNet::LayerType &obj, unsigned const /* version */ ) {
 		ar & obj;
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType >& obj, unsigned const /* version */ ) {
 		std::size_t numInputs = obj.getNumInputs();
 		std::size_t numOutputs = obj.getNumOutputs();
 		NNet::LayerType layerType = obj.getLayerType();
@@ -114,7 +114,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void save_construct_data( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType > const* obj, unsigned const version ) {
+	void save_construct_data( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType > const* obj, unsigned const /* version */ ) {
 		std::size_t numInputs = obj->getNumInputs();
 		std::size_t numOutputs = obj->getNumOutputs();
 		NNet::LayerType layerType = obj->getLayerType();
@@ -124,7 +124,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void load_construct_data( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType >* obj, unsigned const version ) {
+	void load_construct_data( ArchiveType &ar, NNet::BaseLayer< NumericTraitsType >* obj, unsigned const /* version */ ) {
 		std::size_t numInputs;
 		std::size_t numOutputs;
 		NNet::LayerType layerType;

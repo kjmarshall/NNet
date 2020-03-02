@@ -31,7 +31,7 @@ namespace NNet { // begin NNet
 		~RegressionDataHandler( ) = default;
 
 		// interface functions
-		void loadData( std::string const& trainingDataPath, std::string const& testingDataPath, char delimiter ) override {
+		void loadData( std::string const& trainingDataPath, std::string const& /* testingDataPath */, char delimiter ) override {
 			loadDataFile( trainingDataPath, delimiter, this->getTrainingData( ) );
 		}
 
@@ -133,8 +133,6 @@ namespace NNet { // begin NNet
 				return ((int)c1 << 24) + ((int)c2 << 16) + ((int)c3 << 8) + c4;
 			};
 
-			typedef unsigned char uchar;
-
 			std::ifstream file( full_path, std::ios::binary );
 
 			if( file.is_open( ) ) {
@@ -157,7 +155,7 @@ namespace NNet { // begin NNet
 					InputDataType imageData( image_size );
 					unsigned char buffer[image_size];
 					file.read( (char*)&buffer[0], image_size );
-					for ( std::size_t j = 0; j < image_size; ++j ) {
+					for ( int j = 0; j < image_size; ++j ) {
 						imageData[j] = static_cast<double>(buffer[j]);
 					}
 					dataSet.emplace_back( imageData );
@@ -176,8 +174,6 @@ namespace NNet { // begin NNet
 				c1 = i & 255, c2 = (i >> 8) & 255, c3 = (i >> 16) & 255, c4 = (i >> 24) & 255;
 				return ((int)c1 << 24) + ((int)c2 << 16) + ((int)c3 << 8) + c4;
 			};
-
-			typedef unsigned char uchar;
 
 			std::ifstream file(full_path, std::ios::binary);
 

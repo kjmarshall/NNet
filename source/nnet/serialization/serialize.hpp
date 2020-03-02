@@ -153,7 +153,7 @@ namespace NNet { // begin NNet
 
 // namespace boost::serialization { // begin boost::serialization
 // 	template< typename ArchiveType >
-// 	void serialize( ArchiveType &ar, unsigned const version ) {
+// 	void serialize( ArchiveType &ar, unsigned const /* version */ ) {
 // 	}
 // } // end boost::serialization
 

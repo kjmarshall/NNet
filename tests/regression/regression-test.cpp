@@ -14,7 +14,7 @@
 
 using namespace NNet;
 
-int main(int argc, char *argv[]) {
+int main( int /* argc */, char ** /* argv */ ) {
 
 	// declare numeric traits type
 	using NumericTraitsType = NumericTraits< double >;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	// define activation fuction and layer types
 	// using ActFunType = LogisticActivation< NumericTraitsType >;
 	// using ActFunType = TanHActivation< NumericTraitsType >;
-	using ActFunType = ArcTanActivation< NumericTraitsType >;
+	// using ActFunType = ArcTanActivation< NumericTraitsType >;
 	using ActLayerType = ActivationLayer< NumericTraitsType, ArcTanActivation >;
 
 	// define network intitializer type

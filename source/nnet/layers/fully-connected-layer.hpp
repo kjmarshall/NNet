@@ -90,7 +90,7 @@ namespace NNet { // begin NNet
 		}
 
 		// backward compute
-		void backwardCompute( VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& inputDeltaVec, VectorXType& outputDeltaVec ) override {
+		void backwardCompute( VectorXType const& /* inputVec */, VectorXType const& /* outputVec */, VectorXType const& inputDeltaVec, VectorXType& outputDeltaVec ) override {
 			// std::cout << "Backward Compute: " << std::endl;
 			// std::cout << "mInputVec: " << std::endl
 			// 		  << mInputVec << std::endl;
@@ -134,7 +134,7 @@ namespace NNet { // begin NNet
 
 namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >& obj, unsigned const /* version */ ) {
 		ar & boost::serialization::base_object< NNet::TrainableLayer< NumericTraitsType > >( obj );
 		ar & obj.getWeightMat();
 		ar & obj.getWeightGradMat();
@@ -144,7 +144,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void save_construct_data( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType > const* obj, unsigned const version ) {
+	void save_construct_data( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType > const* obj, unsigned const /* version */ ) {
 		std::size_t numInputs, numOutputs;
 		NNet::LayerType layer_type;
 		numInputs = obj->getNumInputs();
@@ -167,7 +167,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType >
-	void load_construct_data( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >* obj, unsigned const version ) {
+	void load_construct_data( ArchiveType &ar, NNet::FullyConnectedLayer< NumericTraitsType >* obj, unsigned const /* version */ ) {
 		std::size_t numInputs, numOutputs;
 		NNet::LayerType layer_type;
 		ar >> numInputs;

@@ -22,14 +22,14 @@ namespace NNet { // begin NNet
 			outputVec = inputVec;
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
-							   VectorXType const& outputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
+							   VectorXType const& /* outputVec */,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
 			deltaOutputVec = deltaInputVec;
 		}
 
-		bool operator==( IdentityActivation const& other ) const {
+		bool operator==( IdentityActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -43,7 +43,7 @@ namespace NNet { // begin NNet
 			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), fun );
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -55,7 +55,7 @@ namespace NNet { // begin NNet
 							derFun );
 		}
 
-		bool operator==( LogisticActivation const& other ) const {
+		bool operator==( LogisticActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -69,7 +69,7 @@ namespace NNet { // begin NNet
 							[]( auto const& x ) { return std::tanh( x ); } );
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -81,7 +81,7 @@ namespace NNet { // begin NNet
 							derFun );
 		}
 
-		bool operator==( TanHActivation const& other ) const {
+		bool operator==( TanHActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -97,7 +97,7 @@ namespace NNet { // begin NNet
 		}
 
 		void backwardActivate( VectorXType const& inputVec,
-							   VectorXType const& outputVec,
+							   VectorXType const& /* outputVec */,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
 			auto derFun = []( auto const& input_i, auto const& deltaInput_i ) {
@@ -108,7 +108,7 @@ namespace NNet { // begin NNet
 							derFun );
 		}
 
-		bool operator==( ArcTanActivation const& other ) const {
+		bool operator==( ArcTanActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -122,7 +122,7 @@ namespace NNet { // begin NNet
 			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), fun );
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -132,7 +132,7 @@ namespace NNet { // begin NNet
 							derFun );
 		}
 
-		bool operator==( ReLUActivation const& other ) const {
+		bool operator==( ReLUActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -150,7 +150,7 @@ namespace NNet { // begin NNet
 			auto fun = [this]( auto const& input_i ) { return ( input_i < 0.0 ) ? mAlpha * input_i : input_i; };
 			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), fun );
 		}
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -183,7 +183,7 @@ namespace NNet { // begin NNet
 			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), fun );
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -218,7 +218,7 @@ namespace NNet { // begin NNet
 			std::transform( outputVec.begin( ), outputVec.end( ), outputVec.begin( ), [sum]( auto const& ele ) { return ele/sum; } );
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -226,7 +226,7 @@ namespace NNet { // begin NNet
 			deltaOutputVec = ( diagMat  - outputVec * outputVec.transpose( ) ) * deltaInputVec;
 		}
 
-		bool operator==( SoftMaxActivation const& other ) const {
+		bool operator==( SoftMaxActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -248,7 +248,7 @@ namespace NNet { // begin NNet
 			std::transform( inputVec.begin( ), inputVec.end( ), outputVec.begin( ), [sum,max]( auto const& ele ) { return ele - max - std::log(sum); } );
 		}
 
-		void backwardActivate( VectorXType const& inputVec,
+		void backwardActivate( VectorXType const& /* inputVec */,
 							   VectorXType const& outputVec,
 							   VectorXType const& deltaInputVec,
 							   VectorXType& deltaOutputVec ) const {
@@ -260,7 +260,7 @@ namespace NNet { // begin NNet
 							derFun );
 		}
 
-		bool operator==( LogSoftMaxActivation const& other ) const {
+		bool operator==( LogSoftMaxActivation const& /* other */ ) const {
 			return true;
 		}
 	};
@@ -326,7 +326,7 @@ namespace NNet { // begin NNet
 		}
 
 		// backward compute
-		void backwardCompute( VectorXType const& inputVec, VectorXType const& outputVec, VectorXType const& inputDeltaVec, VectorXType& outputDeltaVec ) override {
+		void backwardCompute( VectorXType const& /* inputVec */, VectorXType const& /* outputVec */, VectorXType const& inputDeltaVec, VectorXType& outputDeltaVec ) override {
 			mActFun.backwardActivate( mInputVec, mOutputVec, inputDeltaVec, mOutputDeltaVec );
 			outputDeltaVec = mOutputDeltaVec;
 		}
@@ -359,7 +359,7 @@ namespace NNet { // begin NNet
 
 namespace boost::serialization { // begin boost::serialization
 	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
-	void serialize( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >& obj, unsigned const version ) {
+	void serialize( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >& obj, unsigned const /* version */ ) {
 		ar & boost::serialization::base_object< NNet::BaseLayer< NumericTraitsType > >( obj );
 		ar & obj.getActFun();
 		ar & obj.getInputVec();
@@ -368,7 +368,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
-	void save_construct_data( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun > const* obj, unsigned const version ) {
+	void save_construct_data( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun > const* obj, unsigned const /* version */ ) {
 		std::size_t numInputs, numOutputs;
 		numInputs = obj->getNumInputs();
 		numOutputs = obj->getNumOutputs();
@@ -384,7 +384,7 @@ namespace boost::serialization { // begin boost::serialization
 	}
 
 	template< typename ArchiveType, typename NumericTraitsType, template < typename > class ActFun >
-	void load_construct_data( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >* obj, unsigned const version ) {
+	void load_construct_data( ArchiveType &ar, NNet::ActivationLayer< NumericTraitsType, ActFun >* obj, unsigned const /* version */ ) {
 		std::size_t numInputs, numOutputs;
 		ar >> numInputs;
 		ar >> numOutputs;
@@ -399,47 +399,47 @@ namespace boost::serialization { // begin boost::serialization
 
 	// IdentityActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::IdentityActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::IdentityActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// LogisticActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::LogisticActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::LogisticActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// TanHActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::TanHActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::TanHActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// ArcTanActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::ArcTanActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::ArcTanActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// ReLUActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::ReLUActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::ReLUActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// PReLUActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::PReLUActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::PReLUActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// ELUActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::ELUActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::ELUActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// SoftMaxActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::SoftMaxActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::SoftMaxActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 	// LogSoftMaxActivation< NumericTraitsType >
 	template< typename ArchiveType, typename NumericTraitsType >
-	void serialize( ArchiveType &ar, NNet::LogSoftMaxActivation< NumericTraitsType >& obj, unsigned const version ) {
+	void serialize( ArchiveType & /* ar */, NNet::LogSoftMaxActivation< NumericTraitsType >& /* obj */, unsigned const /* version */ ) {
 	}
 
 } // end boost::serialization

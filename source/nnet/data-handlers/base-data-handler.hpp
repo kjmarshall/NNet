@@ -42,7 +42,7 @@ namespace NNet { // begin NNet
 		auto const& getTarget( DataPairType const& dataPair ) { return dataPair.second; }
 
 		// interface functions
-		virtual void loadData( std::string const& trainingDataPath, std::string const& testingDataPath, char delimiter ) { };
+		virtual void loadData( std::string const& /* trainingDataPath */, std::string const& /* testingDataPath */, char /* delimiter */ ) { };
 
 		void printData( std::ostream& os = std::cout ) {
 			auto dataPrinter = [&]( auto const& data, std::string const& title ) {

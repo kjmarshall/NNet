@@ -14,7 +14,7 @@
 
 using namespace NNet;
 
-int main(int argc, char *argv[]) {
+int main(int /* argc */, char ** /* argv */ ) {
 
 	// declare numeric traits type
 	using NumericTraitsType = NumericTraits< double >;
@@ -34,10 +34,10 @@ int main(int argc, char *argv[]) {
 	// create activation functions
 	// using ActFunType = LogisticActivation< NumericTraitsType >;
 	// using ActFunType = TanHActivation< NumericTraitsType >;
-	using ActFunType = ReLUActivation< NumericTraitsType >;
+	// using ActFunType = ReLUActivation< NumericTraitsType >;
 	using ActLayerType = ActivationLayer< NumericTraitsType, LogisticActivation >;
 
-	using SoftMaxActFunType = SoftMaxActivation< NumericTraitsType >;
+	// using SoftMaxActFunType = SoftMaxActivation< NumericTraitsType >;
 	using SoftMaxActLayerType = ActivationLayer< NumericTraitsType, SoftMaxActivation >;
 
 	// create the neural network initializer
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 	using NetworkTrainerType = NetworkTrainer< NetworkType, OptimizerType, CrossEntropyLossFuction, DataHandlerType >;
 	NetworkTrainerType networkTrainer( nnet, optimizer, dataHandler );
 
-	auto computePrediction = []( auto& network_trainer, auto const& data, std::size_t& correct, std::size_t& incorrect, double& totalLoss, std::ostream& os, std::optional< std::reference_wrapper< std::ostream > > pred_out = {} ) {
+	auto computePrediction = []( auto& network_trainer, auto const& data, std::size_t& correct, std::size_t& incorrect, double& totalLoss, std::ostream&  /* os */, std::optional< std::reference_wrapper< std::ostream > > pred_out = {} ) {
 		for ( auto const& [input,target] : data ) {
 			auto const& lastOutput = network_trainer.computePrediction( input );
 			auto [loss,gradLoss] = network_trainer.computeLoss( lastOutput, target );
