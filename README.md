@@ -1,33 +1,33 @@
 # NNet
-NNet is a basic deep learning C++ template library that implements different types of layer based neural network architectures.  The goal of the this project is to document an approach to the modern C++ design, implementation, and architecture of a simple yet flexible deep learning framework.  The library is both fast and flexible owing to its use of compile time polymorphism in layer, optimizer, and activation function design and its dynamic dispatch in network training.  NNet allows for the easy construction of dense fully connected feed forward networks.  Data of different ranks and of different numeric type (e.g. float, double) can be handled in a straightforward way by overloading the `NumericTraits` template class. The library takes advantage of modern C++17 programming techniques. Examples of the library's use are provided with sample documentation discussed below.
+NNet is a deep learning C++ template library that implements different types of layer based neural network architectures.  The NNet library is both fast and flexible owing to its use of compile time polymorphism in layer, optimizer, and activation function design and its dynamic dispatch in network training. NNet allows for the easy construction of dense fully connected feed forward networks. Data of different ranks and numeric type (e.g. float, double) can be handled in a straightforward way by overloading the `NumericTraits` template class. The library takes advantage of modern C++17 programming techniques. Examples of the library's use are provided with sample documentation discussed below.
 
 ## Documentation and Derivations
-A portion of this project is also concerned with documenting rigorous derivations for various learning algorithms (e.g. back propagation).  Derivations using Einstein summation notation (ESN) are provided in a living LaTeX document (see the [docs](./docs) directory) which will change as new functionality or network architectures are added.  
+Rigorous derivations for various learning algorithms (e.g. back propagation) are documented in a living LaTex document (see [docs/nnet-kmarshal.pdf](./docs/nnet-kmarshal.pdf)).  All Derivations almost exclusively use Einstein summation notation (ESN) owing to my background in low Reynolds number hydrodynamics.  Those that are unfamiliar with ESN may consult the ESN document [docs/esn-barr.pdf](./docs/esn-barr.pdf) written by my good friend and colleague Alan Barr. 
 
 # Contributions and Contact Information
-This project initially started because of an interest in implementing deep net architectures.  Outside contributions as pull requests and discussions are welcome.  Feel free to contact me through my [LinkedIn](http://www.linkedin.com/in/kevin-j-marshall).
+This project initially started because I was interested in designing and implementing deep net architectures.  Outside contributions as pull requests (PRs) and discussions are welcome.  Feel free to contact me through my [LinkedIn](http://www.linkedin.com/in/kevin-j-marshall).
 
 ## Table of Contents
 
 <!-- toc -->
 
-  * [Getting Started](#getting-started)
-    + [Requirements](#requirements)
-  * [API](#api)
-    + [Data Types and Numeric Precision Controls](#data-types-and-numeric-precision-controls)
-    + [Data Handlers](#data-handlers)
-    + [Layers](#layers)
-      - [Fully Connected Layers](#fully-connected-layers)
-      - [Activation Layers](#activation-layers)
-    + [Initializers](#initializers)
-    + [Network](#network)
-    + [Optimizers](#optimizers)
-      - [Optimizers with Momentum](#optimizers-with-momentum)
-      - [Optimizers with Adaptive Learning Rates](#optimizers-with-adaptive-learning-rates)
-      - [Optimizers with Momentum and Adaptive Learning Rates](#optimizers-with-momentum-and-adaptive-learning-rates)
-    + [Network Trainer](#network-trainer)
-  * [Network Training](#network-training)
-  * [Serialization, Saving, and Loading](#serialization-saving-and-loading)
+- [Getting Started](#getting-started)
+  * [Requirements](#requirements)
+- [API](#api)
+  * [Data Types and Numeric Precision Controls](#data-types-and-numeric-precision-controls)
+  * [Data Handlers](#data-handlers)
+  * [Layers](#layers)
+    + [Fully Connected Layers](#fully-connected-layers)
+    + [Activation Layers](#activation-layers)
+  * [Initializers](#initializers)
+  * [Network](#network)
+  * [Optimizers](#optimizers)
+    + [Optimizers with Momentum](#optimizers-with-momentum)
+    + [Optimizers with Adaptive Learning Rates](#optimizers-with-adaptive-learning-rates)
+    + [Optimizers with Momentum and Adaptive Learning Rates](#optimizers-with-momentum-and-adaptive-learning-rates)
+  * [Network Trainer](#network-trainer)
+- [Network Training](#network-training)
+- [Serialization, Saving, and Loading](#serialization-saving-and-loading)
 - [Todo List](#todo-list)
 
 <!-- tocstop -->
@@ -281,7 +281,7 @@ Both text and binary archive types are currently supported.  Archive type is ded
 
 The implementation details of serialization are complex due to the inheritance hierarchy trees, different layer types, and need to serialize all data containers (e.g. Eigen vectors).  For more details see the examples found in the [tests](./tests) directory and the specific test `TEST( Serialization, NeuralNetwork )` in [tests/gtests/test.cpp](./tests/gtests/test.cpp).
 
-# Todo List
+## Todo List
 - Implement different neural net architectures
 	- CNN
 	- GANs

@@ -131,7 +131,7 @@ set_target_properties(gtest PROPERTIES FOLDER external)
 set_target_properties(gtest_main PROPERTIES FOLDER external)
 set_target_properties(gmock PROPERTIES FOLDER external)
 set_target_properties(gmock_main PROPERTIES FOLDER external)
-#list( APPEND INCLUDES "${GOOGLE_TEST_DIR}/googletest/include" )
+# list( APPEND INCLUDES "${GOOGLE_TEST_DIR}/googletest/include" )
 
 ## ------------ ##
 ## Add projects ##
