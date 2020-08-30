@@ -1,8 +1,8 @@
 # NNet
-NNet is a deep learning C++ template library that implements different types of layer based neural network architectures. The NNet library is both fast and flexible owing to its use of compile time polymorphism in layer, optimizer, and activation function design and its dynamic dispatch in network training. NNet allows for the easy construction of dense fully connected feed forward networks. Data of different ranks and numeric type (e.g. float, double) can be handled in a straightforward way by overloading the `NumericTraits` template class. The library takes advantage of modern C++17 programming techniques. Examples of the library's use are provided with sample documentation discussed below.
+NNet is a basic deep learning C++ template library that implements different types of layer based neural network architectures. The NNet library is both fast and flexible owing to its use of compile time polymorphism in layer, optimizer, and activation function design, and its use of dynamic dispatch in network training. NNet allows for the easy construction of dense fully connected feed forward networks. Data of different ranks and numeric type (e.g. float, double) can be handled in a straightforward way by overloading the `NumericTraits` template class. The library takes advantage of modern C++17 programming techniques. Examples of the library's use are provided with sample documentation discussed below.
 
 ## Documentation and Derivations
-Rigorous derivations for various learning algorithms (e.g. back propagation) are documented in a living LaTex document (see [docs/nnet-kmarshal.pdf](./docs/nnet-kmarshal.pdf)). All Derivations almost exclusively use Einstein summation notation (ESN) owing to my background in low Reynolds number hydrodynamics. Those that are unfamiliar with ESN may consult the ESN document [docs/esn-barr.pdf](./docs/esn-barr.pdf) written by my good friend and colleague Alan Barr. 
+Rigorous derivations for various learning algorithms (e.g. back propagation) are documented in a living LaTex document (see [docs/nnet-kmarshal.pdf](./docs/nnet-kmarshal.pdf)). All Derivations almost exclusively use Einstein summation notation (ESN). Those that are unfamiliar with ESN may consult the well written ESN document [docs/esn-barr.pdf](./docs/esn-barr.pdf). 
 
 # Contributions and Contact Information
 This project initially started because I was interested in designing and implementing deep net architectures. Outside contributions as pull requests (PRs) and discussions are welcome. Feel free to contact me through my [LinkedIn](http://www.linkedin.com/in/kevin-j-marshall).
@@ -50,15 +50,15 @@ Basic usage of the library is shown in examples
 - minst-test.cpp
 
 The following subsections describe the relevant api, classes, and implementation designs in roughly the order that they would be used or invoked to begin constructing a neural network for modeling a given ML problem.
-- Define the data handler, import training and testing data
-- Define the layer types (activation, fully connected, etc...) to be used in the neural network
-- Define an initializer scheme to seed the network layers
-- Define a network that glues together data, layers, and an initializer
-- Define an optimizer that performs some sort of gradient descent
-- Define a network trainer that glues together the network an optimizer
-- Use the network trainer to train the network
-- Serialize/save the network or use it to perform predictions
-- De-serialize/load the network to re-train to to perform predictions at a later time
+1. Define the data handler, import training and testing data
+2. Define the layer types (activation, fully connected, etc...) to be used in the neural network
+3. Define an initializer scheme to seed the network layers
+4. Define a network that glues together data, layers, and an initializer
+5. Define an optimizer that performs some sort of gradient descent
+6. Define a network trainer that glues together the network an optimizer
+7. Use the network trainer to train the network
+8. Serialize/save the network or use it to perform predictions
+9. De-serialize/load the network to re-train to to perform predictions at a later time
 
 ### Data Types and Numeric Precision Controls
 Data types and numeric precision are controlled by the `NumericTraits` class which is templated on a fundamental data type (usually a POD type) such as float or double. Most classes take a `NumericTraitsType` template parameter which is intended to alias working data types. NNet may be extended to more complex data types by providing an overload or specialization to the `NumericTraits` template struct. 
@@ -76,7 +76,7 @@ For most use cases it is general enough to template on a pseudo-vector type e.g.
 This library currently only supports computations on fully connected layers and activation layers. Layers are templated on numeric type.
 
 #### Fully Connected Layers
-Fully connected layers are the main currency by which information propagates through the network net. 
+Fully connected layers are the main currency by which information propagates through the network. 
 ```c++
 template< typename NumericTraitsType >
 class FullyConnectedLayer
@@ -291,17 +291,16 @@ The implementation details of serialization are complex due to the inheritance h
 - Implement weight regularization
 - Review existing design and implement better design patterns
 - Attempt time series prediction
-- Saving and loading
 - Implement exception handling with try catch error handling
 - Develop training accuracy and testing accuracy outputs and plotting capabilities
 	- confusion matrix for minst
 - Format network info printer as table
 	- integrate fmtlib as a submodule
 - ~~Finish developing network serialization~~
-	- ~~Serialize/savee~~
+	- ~~Saving and loading~~
+	- ~~Serialize/save~~
 	- ~~Deserialize/load~~
-- Proofread docs
-- Generate nicer example docs
+- Generate additional example docs
 	- Produce training and testing accuracy plot
 - Check library files and structure
 	- Organize tests folder, which data to serialize for examples?
