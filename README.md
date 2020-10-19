@@ -2,10 +2,10 @@
 NNet is a basic deep learning C++ template library that implements different types of layer based neural network architectures. The NNet library is both fast and flexible owing to its use of compile time polymorphism in layer, optimizer, and activation function design, and its use of dynamic dispatch in network training. NNet allows for the easy construction of dense fully connected feed forward networks. Data of different ranks and numeric type (e.g. float, double) can be handled in a straightforward way by overloading the `NumericTraits` template class. The library takes advantage of modern C++17 programming techniques. Examples of the library's use are provided with sample documentation discussed below.
 
 ## Documentation and Derivations
-Rigorous derivations for various learning algorithms (e.g. back propagation) are documented in a living LaTex document (see [docs/nnet-kmarshal.pdf](./docs/nnet-kmarshal.pdf)). All Derivations almost exclusively use Einstein summation notation (ESN). Those that are unfamiliar with ESN may consult the well written ESN document [docs/esn-barr.pdf](./docs/esn-barr.pdf). 
+Derivations for various learning algorithms (e.g. back propagation) are documented in a LaTex document (see [docs/nnet-kmarshal.pdf](./docs/nnet-kmarshal.pdf)). All derivations exclusively use Einstein Summation Notation (ESN). Those that are unfamiliar with ESN may consult the well written ESN document [docs/esn-barr.pdf](./docs/esn-barr.pdf). 
 
 # Contributions and Contact Information
-This project initially started because I was interested in designing and implementing deep net architectures. Outside contributions as pull requests (PRs) and discussions are welcome. Feel free to contact me through my [LinkedIn](http://www.linkedin.com/in/kevin-j-marshall).
+ Outside contributions as pull requests (PRs) and discussions are welcome. Feel free to contact me through GitHub.
 
 ## Table of Contents
 
@@ -35,7 +35,7 @@ This project initially started because I was interested in designing and impleme
 <!-- npx markdown-toc -i README.md -->
 
 ## Getting Started
-The easiest way to get started using or understanding NNet is to read the documentation below and examine some of the examples and tests provided in the [tests](./tests) directory.
+The easiest way to get started using or understanding NNet is to scan through the documentation below and examine some of the examples and tests provided in the [tests](./tests) directory.
 
 ### Requirements
 - A compiler that supports C++17 features (e.g. std::optional, structured bindings, constexpr if )
@@ -91,8 +91,8 @@ Fully connected layers are trainable layers, notably different from activation l
 #### Activation Layers
 Activation layers take inputs and produce a (usually) non-linear output. They are templated on numeric type and activation function type
 ```c++
-template< typename NumericTraitsType, 
-		  template < typename > class ActFun >
+template< typename NumericTraitsType,
+          template < typename > class ActFun >
 class ActivationLayer
 	: public BaseLayer< NumericTraitsType >
 ```
@@ -124,7 +124,7 @@ class GaussInitializer
 - Glorot ( weight matrix elements by sampling a random normal N(0, 2/( inputs + outputs) ) variable )
 ```c++
 template< typename NumericTraitsType >
-	class GlorotInitializer
+class GlorotInitializer
 	: public BaseInitializer< NumericTraitsType >
 ```
 - He ( weight matrix elements initialized by sampling a random normal N(0,2/outputs) variable )
@@ -220,7 +220,7 @@ The network trainer class may be used to train a neural network. A network train
 These three steps are shown in the single sample compute function `runSingleSample` that operates on a single training sample with an associated input and target,
 ```c++
 NumericType runSingleSample( VectorXType const& inputVec,
-							 VectorXType const& targetVec ) {
+                             VectorXType const& targetVec ) {
 	computeForward( inputVec );
 	auto [loss, gradLoss] = computeLoss( getNetwork( ).getLastOutput( ), targetVec );
 	// std::cout << "Single Sample Loss: " << loss << std::endl;
